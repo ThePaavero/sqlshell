@@ -64,9 +64,7 @@ const listenToSidebarTogglerLinks = () => {
       window.fetch(url, {
         credentials: 'same-origin'
       })
-        .then(response => {
-          console.log(response)
-        })
+        .then(console.log)
         .catch(console.error)
     })
   })

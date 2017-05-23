@@ -2,6 +2,8 @@
 
 session_start();
 
+$shellPassword = 'demo';
+
 $host = '127.0.0.1';
 $db = 'jaateloakatemia';
 $user = 'homestead';
