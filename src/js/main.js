@@ -58,7 +58,9 @@ const listenToSidebarTogglerLinks = () => {
       const toToggle = e.currentTarget.parentNode
       link.classList.toggle('open')
       toToggle.classList.toggle('open')
-      const url = window.sqlshellData.baseUrl + '?ajax=1&action=SET_TABLES_BAR_OPEN_STATUS&status=' + (toToggle.classList.contains('open') ? 'open' : '')
+      document.body.classList.toggle('barTogglerOpen')
+      const open = toToggle.classList.contains('open') ? 'open' : ''
+      const url = window.sqlshellData.baseUrl + '?ajax=1&action=SET_TABLES_BAR_OPEN_STATUS&status=' + open
       window.fetch(url, {
         credentials: 'same-origin'
       })

@@ -7,7 +7,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' href='styles.css'>
 </head>
-<body>
+<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?>'>
 <div class='app'>
   <section>
     <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
@@ -26,10 +26,10 @@
       <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
     </section>
     <section class='results'>
-        <?php if (isset($results) && ! empty($results)): ?>
-          <h3>Result:</h3>
-          <pre><?php echo $results ?></pre>
-        <?php endif; ?>
+      <?php if (isset($results) && ! empty($results)): ?>
+        <h3>Result:</h3>
+        <pre><?php echo $results ?></pre>
+      <?php endif; ?>
     </section>
   </div><!-- displays -->
 </div><!-- app -->
