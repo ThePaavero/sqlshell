@@ -10,7 +10,7 @@
 <body>
 <div class='app'>
   <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
-    <textarea name='sql' autofocus required><?php echo $sql ?></textarea>
+    <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
     <input type='submit' value='Execute'/>
   </form> <!-- sql-form -->
   <p>
