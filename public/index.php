@@ -16,10 +16,16 @@
   <p>
     <small>CTRL + Enter to run query</small>
   </p>
+  <h3>Tables:</h3>
+  <div class='tables'>
+  </div><!-- tables -->
     <?php if (isset($results) && ! empty($results)): ?>
       <pre><?php echo $results ?></pre>
     <?php endif; ?>
 </div><!-- app -->
+<script>
+  window.sqlshellData = <?php echo $jsonData ?>
+</script>
 <script src='bundle.js'></script>
 </body>
 </html>
