@@ -9,19 +9,26 @@
 </head>
 <body>
 <div class='app'>
-  <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
-    <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
-    <input type='submit' value='Execute'/>
-  </form> <!-- sql-form -->
-  <p>
-    <small>CTRL + Enter to run query</small>
-  </p>
-  <h3>Tables:</h3>
-  <div class='tables'>
-  </div><!-- tables -->
-    <?php if (isset($results) && ! empty($results)): ?>
-      <pre><?php echo $results ?></pre>
-    <?php endif; ?>
+  <section>
+    <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
+      <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
+      <input type='submit' value='Execute'/>
+    </form> <!-- sql-form -->
+    <p>
+      <small>CTRL + Enter to run query</small>
+    </p>
+  </section>
+  <section>
+    <h3>Tables:</h3>
+    <div class='tables'>
+    </div><!-- tables -->
+  </section>
+  <section>
+      <?php if (isset($results) && ! empty($results)): ?>
+        <h3>Result:</h3>
+        <pre><?php echo $results ?></pre>
+      <?php endif; ?>
+  </section>
 </div><!-- app -->
 <script>
   window.sqlshellData = <?php echo $jsonData ?>

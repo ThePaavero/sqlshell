@@ -1,3 +1,20 @@
+const form = document.querySelector('.sql-form')
+const sqlPrompt = form.querySelector('textarea')
+
+const init = () => {
+  listenToSubmitKeyCombination()
+  printTableButtons(window.sqlshellData.tables)
+}
+
+const focusOnSqlPrompt = () => {
+    sqlPrompt.focus()
+}
+
+const activateTable = (tableName) => {
+  sqlPrompt.innerText = 'select * from ' + tableName
+  focusOnSqlPrompt()
+}
+
 const printTableButtons = (tables) => {
   const wrapper = document.querySelector('.tables')
   tables.map(row => {
@@ -7,16 +24,19 @@ const printTableButtons = (tables) => {
     link.className = 'table-button'
     link.href = '#' + tableName
     link.innerText = tableName
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      activateTable(tableName)
+    })
     wrapper.appendChild(link)
   })
 }
 
-(() => {
-  const form = document.querySelector('.sql-form')
+const listenToSubmitKeyCombination = () => {
+
   let ctrlDown = false
   document.addEventListener('keydown', e => {
     if (e.keyCode === 17) {
-      console.log('Ctrl down!')
       ctrlDown = true
     }
     if (e.keyCode === 13 && ctrlDown) {
@@ -28,7 +48,6 @@ const printTableButtons = (tables) => {
       ctrlDown = false
     }
   })
+}
 
-  printTableButtons(window.sqlshellData.tables)
-
-})()
+init()
