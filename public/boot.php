@@ -5,7 +5,7 @@ session_start();
 $shellPassword = 'demo';
 
 $host = '127.0.0.1';
-$db = 'jaateloakatemia';
+$db = 'information_schema';
 $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
