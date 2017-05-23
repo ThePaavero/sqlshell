@@ -14,21 +14,24 @@
       <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
       <input type='submit' value='Execute'/>
     </form> <!-- sql-form -->
-    <p>
+    <div class='in-grid'>
       <small>CTRL + Enter to run query</small>
-    </p>
+    </div><!-- in-grid -->
   </section>
-  <section>
-    <h3>Tables:</h3>
-    <div class='tables'>
-    </div><!-- tables -->
-  </section>
-  <section>
-      <?php if (isset($results) && ! empty($results)): ?>
-        <h3>Result:</h3>
-        <pre><?php echo $results ?></pre>
-      <?php endif; ?>
-  </section>
+  <div class='displays'>
+    <section class='tables'>
+      <h3>Tables:</h3>
+      <div class='tables'>
+      </div><!-- tables -->
+    </section>
+    <section class='results'>
+        <?php if (isset($results) && ! empty($results)): ?>
+          <h3>Result:</h3>
+          <pre><?php echo $results ?></pre>
+        <?php endif; ?>
+    </section>
+    <a href='#'>▸</a>
+  </div><!-- displays -->
 </div><!-- app -->
 <script>
   window.sqlshellData = <?php echo $jsonData ?>
