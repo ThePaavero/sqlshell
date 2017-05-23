@@ -4,10 +4,11 @@ const sqlPrompt = form.querySelector('textarea')
 const init = () => {
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
+  listenToSidebarTogglerLinks()
 }
 
 const focusOnSqlPrompt = () => {
-    sqlPrompt.focus()
+  sqlPrompt.focus()
 }
 
 const activateTable = (tableName) => {
@@ -33,7 +34,6 @@ const printTableButtons = (tables) => {
 }
 
 const listenToSubmitKeyCombination = () => {
-
   let ctrlDown = false
   document.addEventListener('keydown', e => {
     if (e.keyCode === 17) {
@@ -47,6 +47,26 @@ const listenToSubmitKeyCombination = () => {
     if (e.keyCode === 17) {
       ctrlDown = false
     }
+  })
+}
+
+const listenToSidebarTogglerLinks = () => {
+  const links = document.querySelectorAll('.bar-toggler')
+  Array.from(links).forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      const toToggle = e.currentTarget.parentNode
+      link.classList.toggle('open')
+      toToggle.classList.toggle('open')
+      const url = window.sqlshellData.baseUrl + '?ajax=1&action=SET_TABLES_BAR_OPEN_STATUS&status=' + (toToggle.classList.contains('open') ? 'open' : '')
+      window.fetch(url, {
+        credentials: 'same-origin'
+      })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(console.error)
+    })
   })
 }
 

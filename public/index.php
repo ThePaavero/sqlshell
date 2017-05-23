@@ -19,10 +19,11 @@
     </div><!-- in-grid -->
   </section>
   <div class='displays'>
-    <section class='tables'>
+    <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
       <h3>Tables:</h3>
       <div class='tables'>
       </div><!-- tables -->
+      <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
     </section>
     <section class='results'>
         <?php if (isset($results) && ! empty($results)): ?>
@@ -30,7 +31,6 @@
           <pre><?php echo $results ?></pre>
         <?php endif; ?>
     </section>
-    <a href='#'>▸</a>
   </div><!-- displays -->
 </div><!-- app -->
 <script>
