@@ -5,7 +5,7 @@ session_start();
 $shellPassword = 'demo';
 
 $host = '127.0.0.1';
-$db = 'jaateloakatemia';
+$db = 'information_schema';
 $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
@@ -120,7 +120,8 @@ small {
       margin-bottom: 4px; }
 
 textarea {
-  width: 100vw;
+  display: block;
+  width: 100%;
   height: 20vh;
   background: #353535;
   border: none;
