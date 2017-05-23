@@ -166,6 +166,12 @@ pre {
   text-decoration: none; }
   .open .bar-toggler {
     transform: translateY(-50%) rotate(180deg); }
+
+.prompt-help {
+  margin: 1vh 0; }
+
+.submit-on-click {
+  cursor: pointer; }
 </style>
 </head>
 <body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?>'>
@@ -176,19 +182,21 @@ pre {
       <input type='submit' value='Execute'/>
     </form> <!-- sql-form -->
     <div class='in-grid'>
-      <small>CTRL + Enter to run query</small>
+      <div class='prompt-help'>
+        <small class='submit-on-click'>CTRL + Enter to run query</small>
+      </div><!-- prompt-help -->
     </div><!-- in-grid -->
   </section>
   <div class='displays'>
     <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
-      <h3>Tables:</h3>
+      <h3>Tables</h3>
       <div class='tables'>
       </div><!-- tables -->
       <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
     </section>
     <section class='results'>
       <?php if (isset($results) && ! empty($results)): ?>
-        <h3>Result:</h3>
+        <h3>Result</h3>
         <pre><?php echo $results ?></pre>
       <?php endif; ?>
     </section>
@@ -207,10 +215,23 @@ var init = function init() {
   listenToSubmitKeyCombination();
   printTableButtons(window.sqlshellData.tables);
   listenToSidebarTogglerLinks();
+  listenToSubmitTriggers();
+  focusOnSqlPrompt();
+};
+
+var listenToSubmitTriggers = function listenToSubmitTriggers() {
+  var buttons = document.querySelectorAll('.submit-on-click');
+  Array.from(buttons).forEach(function (button) {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      form.submit();
+    });
+  });
 };
 
 var focusOnSqlPrompt = function focusOnSqlPrompt() {
   sqlPrompt.focus();
+  sqlPrompt.setSelectionRange(sqlPrompt.value.length, sqlPrompt.value.length);
 };
 
 var activateTable = function activateTable(tableName) {

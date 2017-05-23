@@ -5,10 +5,23 @@ const init = () => {
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
   listenToSidebarTogglerLinks()
+  listenToSubmitTriggers()
+  focusOnSqlPrompt()
+}
+
+const listenToSubmitTriggers = () => {
+  const buttons = document.querySelectorAll('.submit-on-click')
+  Array.from(buttons).forEach(button => {
+    button.addEventListener('click', e => {
+      e.preventDefault()
+      form.submit()
+    })
+  })
 }
 
 const focusOnSqlPrompt = () => {
   sqlPrompt.focus()
+  sqlPrompt.setSelectionRange(sqlPrompt.value.length, sqlPrompt.value.length)
 }
 
 const activateTable = (tableName) => {
