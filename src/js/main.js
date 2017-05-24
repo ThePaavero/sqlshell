@@ -53,7 +53,7 @@ const printTableButtons = (tables) => {
 const addQueryToFavorites = () => {
   const currentQuery = sqlPrompt.value
   favorites.push(currentQuery)
-  window.localStorage.setItem('favorites', JSON.stringify(favorites))
+  saveFavoritesToDisk()
   renderFavorites()
 }
 
@@ -80,10 +80,14 @@ const toggleFavoritesFromDisk = () => {
 }
 
 const renderFavorites = () => {
-  const favoritesReversed = favorites.reverse()
+  favorites = favorites.reverse()
+  if (favorites.length < 1) {
+    hideFavorites()
+    return
+  }
   favoritesWrapper.innerHTML = '<h3>Favorites</h3>'
   const orderedList = document.createElement('ol')
-  favoritesReversed.map(query => {
+  favorites.map(query => {
     const link = document.createElement('li')
     link.setAttribute('data-query', query)
     link.innerText = query
@@ -95,6 +99,7 @@ const renderFavorites = () => {
     })
   })
   favoritesWrapper.appendChild(orderedList)
+  favorites = favorites.reverse()
 }
 
 const showFavorites = () => {
@@ -105,6 +110,15 @@ const hideFavorites = () => {
   window.localStorage.setItem('favorites-open', false)
   favoritesWrapper.classList.remove('open')
   console.log('CLOSE FAVS')
+}
+
+const deleteLastFavorite = () => {
+  favorites.shift()
+  saveFavoritesToDisk()
+}
+
+const saveFavoritesToDisk = () => {
+  window.localStorage.setItem('favorites', JSON.stringify(favorites))
 }
 
 const listenToSubmitKeyCombination = () => {
@@ -119,6 +133,7 @@ const listenToSubmitKeyCombination = () => {
     else if (e.keyCode === 83 && ctrlDown) { // "S"
       e.preventDefault()
       addQueryToFavorites()
+      showFavorites()
     }
     else if (e.keyCode === 76 && ctrlDown) { // "L"
       e.preventDefault()
@@ -130,9 +145,7 @@ const listenToSubmitKeyCombination = () => {
     }
     else if (e.keyCode === 68 && ctrlDown) { // "D"
       e.preventDefault()
-      favorites = []
-      window.localStorage.removeItem('favorites')
-      hideFavorites()
+      deleteLastFavorite()
       renderFavorites()
     }
   })
