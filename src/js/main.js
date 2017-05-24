@@ -1,6 +1,6 @@
 const form = document.querySelector('.sql-form')
 const sqlPrompt = form.querySelector('textarea')
-const favorites = []
+let favorites = []
 const favoritesWrapper = document.querySelector('.favorites-wrapper')
 
 const init = () => {
@@ -127,6 +127,13 @@ const listenToSubmitKeyCombination = () => {
       } else {
         showFavorites()
       }
+    }
+    else if (e.keyCode === 68 && ctrlDown) { // "D"
+      e.preventDefault()
+      favorites = []
+      window.localStorage.removeItem('favorites')
+      hideFavorites()
+      renderFavorites()
     }
   })
   document.addEventListener('keyup', e => {

@@ -19,6 +19,7 @@
         <small class='submit-on-click'>CTRL + Enter to run query</small>
         <small>CTRL + S to save query to favorites</small>
         <small>CTRL + L to toggle list of favorite queries</small>
+        <small>CTRL + D to empty favorites</small>
       </div><!-- prompt-help -->
     </div><!-- in-grid -->
   </section>
