@@ -7,6 +7,8 @@ $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
 
+// /userland
+
 session_start();
 
 $loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);

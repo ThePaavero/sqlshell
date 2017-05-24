@@ -7,6 +7,12 @@ $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
 
+
+// --------------------------------------------------------
+// All stuff below is SQLShell code. Edit at your own risk!
+// --------------------------------------------------------
+
+
 session_start();
 
 $loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
