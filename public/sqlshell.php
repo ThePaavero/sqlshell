@@ -4,6 +4,12 @@ session_start();
 
 $shellPassword = 'demo';
 
+$loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
+if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
+{
+  $_SESSION['sqlshellLoggedIn'] = true;
+}
+
 $host = '127.0.0.1';
 $db = 'information_schema';
 $user = 'homestead';
@@ -37,6 +43,9 @@ if (isset($_GET['ajax']))
     case 'SET_TABLES_BAR_OPEN_STATUS':
       $_SESSION['tablesBarShouldBeOpen'] = $_GET['status'] === 'open';
       echo json_encode(['success' => true, 'valueSet' => $_SESSION['tablesBarShouldBeOpen']]);
+      break;
+    case 'LOG_OUT':
+      session_destroy();
       break;
   }
 
@@ -91,6 +100,14 @@ small {
 
 .in-grid {
   padding: 0 2vw; }
+
+.login-form {
+  padding: 2vh 5vw; }
+
+.warning {
+  display: block;
+  color: #ff4626;
+  padding: 20px 0; }
 
 .tables-section {
   width: 20px;
@@ -170,38 +187,89 @@ pre {
 
 .prompt-help {
   margin: 1vh 0; }
+  .prompt-help small {
+    display: inline-block;
+    margin-right: 5px;
+    padding-right: 10px;
+    border-right: solid 1px rgba(255, 255, 255, 0.5); }
+    .prompt-help small:last-of-type {
+      border-right: none; }
 
 .submit-on-click {
   cursor: pointer; }
+
+.favorites-wrapper {
+  display: none; }
+  .favorites-wrapper.open {
+    display: block;
+    padding-bottom: 2vh; }
+    .favorites-wrapper.open ol {
+      list-style: decimal;
+      list-style-position: inside; }
+    .favorites-wrapper.open li {
+      cursor: pointer;
+      display: list-item;
+      color: inherit;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 5px;
+      margin-bottom: 1px; }
+
+.log-out {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #fff;
+  font-size: 40px;
+  text-decoration: none; }
 </style>
 </head>
-<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?>'>
+<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
 <div class='app'>
-  <section>
-    <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
-      <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
-      <input type='submit' value='Execute'/>
-    </form> <!-- sql-form -->
-    <div class='in-grid'>
-      <div class='prompt-help'>
-        <small class='submit-on-click'>CTRL + Enter to run query</small>
-      </div><!-- prompt-help -->
-    </div><!-- in-grid -->
-  </section>
-  <div class='displays'>
-    <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
-      <h3>Tables</h3>
-      <div class='tables'>
-      </div><!-- tables -->
-      <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
+  <?php if ( ! $loggedIn): ?>
+    <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
+      <label>
+        Password:
+        <input type='password' name='password' required/>
+      </label>
+      <input type='submit' value='Log in'/>
+      <?php if ( ! isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on'): ?>
+        <strong class='warning'>Warning! You're sending the password string over a non-secure connection.</strong>
+      <?php endif ?>
+    </form> <!-- login-form -->
+  <?php else: ?>
+    <a href='#' class='log-out' title='Log out'>✖</a>
+    <section>
+      <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
+        <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
+        <input type='submit' value='Execute'/>
+      </form> <!-- sql-form -->
+      <div class='in-grid'>
+        <div class='prompt-help'>
+          <small class='submit-on-click'>CTRL + Enter to run query</small>
+          <small>CTRL + S to save query to favorites</small>
+          <small>CTRL + L to toggle list of favorite queries</small>
+          <small>CTRL + D to delete the last favorite</small>
+        </div><!-- prompt-help -->
+      </div><!-- in-grid -->
     </section>
-    <section class='results'>
-      <?php if (isset($results) && ! empty($results)): ?>
-        <h3>Result</h3>
-        <pre><?php echo $results ?></pre>
-      <?php endif; ?>
-    </section>
-  </div><!-- displays -->
+    <div class='displays'>
+      <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
+        <h3>Tables</h3>
+        <div class='tables'>
+        </div><!-- tables -->
+        <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
+      </section>
+      <section class='results'>
+        <div class='favorites-wrapper'>
+        </div><!-- favorites-wrapper -->
+        <?php if (isset($results) && ! empty($results)): ?>
+          <h3>Result</h3>
+          <pre><?php echo $results ?></pre>
+        <?php endif; ?>
+      </section>
+    </div><!-- displays -->
+  <?php endif ?>
 </div><!-- app -->
 <script>
   window.sqlshellData = <?php echo $jsonData ?>
@@ -209,15 +277,28 @@ pre {
 <script>(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var form = document.querySelector('.sql-form');
-var sqlPrompt = form.querySelector('textarea');
+var form = void 0;
+var sqlPrompt = void 0;
+var favorites = void 0;
+var favoritesWrapper = void 0;
 
 var init = function init() {
+  if (document.body.classList.contains('logged-out')) {
+    return;
+  }
+  form = document.querySelector('.sql-form');
+  sqlPrompt = form.querySelector('textarea');
+  favorites = [];
+  favoritesWrapper = document.querySelector('.favorites-wrapper');
+
   listenToSubmitKeyCombination();
   printTableButtons(window.sqlshellData.tables);
   listenToSidebarTogglerLinks();
   listenToSubmitTriggers();
   focusOnSqlPrompt();
+  populateFavoritesFromDisk();
+  toggleFavoritesFromDisk();
+  listenToLogOutAndCloseLinks();
 };
 
 var listenToSubmitTriggers = function listenToSubmitTriggers() {
@@ -257,14 +338,101 @@ var printTableButtons = function printTableButtons(tables) {
   });
 };
 
+var addQueryToFavorites = function addQueryToFavorites() {
+  var currentQuery = sqlPrompt.value;
+  favorites.push(currentQuery);
+  saveFavoritesToDisk();
+  renderFavorites();
+};
+
+var populateFavoritesFromDisk = function populateFavoritesFromDisk() {
+  var fromDisk = window.localStorage.getItem('favorites');
+  if (!fromDisk) {
+    return;
+  }
+  var diskFavorites = JSON.parse(fromDisk);
+  diskFavorites.forEach(function (query) {
+    favorites.push(query);
+  });
+  renderFavorites();
+};
+
+var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
+  var open = window.localStorage.getItem('favorites-open') || false;
+  open = open === 'true';
+  if (open === true) {
+    showFavorites();
+  } else {
+    hideFavorites();
+  }
+};
+
+var renderFavorites = function renderFavorites() {
+  favorites = favorites.reverse();
+  if (favorites.length < 1) {
+    hideFavorites();
+    return;
+  }
+  favoritesWrapper.innerHTML = '<h3>Favorites</h3>';
+  var orderedList = document.createElement('ol');
+  favorites.map(function (query) {
+    var link = document.createElement('li');
+    link.setAttribute('data-query', query);
+    link.innerText = query;
+    orderedList.appendChild(link);
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      sqlPrompt.value = link.getAttribute('data-query');
+      focusOnSqlPrompt();
+    });
+  });
+  favoritesWrapper.appendChild(orderedList);
+  favorites = favorites.reverse();
+};
+
+var showFavorites = function showFavorites() {
+  window.localStorage.setItem('favorites-open', true);
+  favoritesWrapper.classList.add('open');
+};
+var hideFavorites = function hideFavorites() {
+  window.localStorage.setItem('favorites-open', false);
+  favoritesWrapper.classList.remove('open');
+};
+
+var deleteLastFavorite = function deleteLastFavorite() {
+  favorites.shift();
+  saveFavoritesToDisk();
+};
+
+var saveFavoritesToDisk = function saveFavoritesToDisk() {
+  window.localStorage.setItem('favorites', JSON.stringify(favorites));
+};
+
 var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
   var ctrlDown = false;
   document.addEventListener('keydown', function (e) {
     if (e.keyCode === 17) {
       ctrlDown = true;
-    }
-    if (e.keyCode === 13 && ctrlDown) {
+    } else if (e.keyCode === 13 && ctrlDown) {
       form.submit();
+    } else if (e.keyCode === 83 && ctrlDown) {
+      // "S"
+      e.preventDefault();
+      addQueryToFavorites();
+      showFavorites();
+    } else if (e.keyCode === 76 && ctrlDown) {
+      // "L"
+      e.preventDefault();
+      if (favoritesWrapper.classList.contains('open')) {
+        hideFavorites();
+      } else {
+        showFavorites();
+      }
+    } else if (e.keyCode === 68 && ctrlDown) {
+      // "D"
+      e.preventDefault();
+      deleteLastFavorite();
+      renderFavorites();
     }
   });
   document.addEventListener('keyup', function (e) {
@@ -288,6 +456,25 @@ var listenToSidebarTogglerLinks = function listenToSidebarTogglerLinks() {
       window.fetch(url, {
         credentials: 'same-origin'
       }).then(console.log).catch(console.error);
+    });
+  });
+};
+
+var logOutAndClose = function logOutAndClose() {
+  var url = window.sqlshellData.baseUrl + '?ajax=1&action=LOG_OUT';
+  window.fetch(url, {
+    credentials: 'same-origin'
+  }).then(function () {
+    window.location = window.location.href;
+  }).catch(console.error);
+};
+
+var listenToLogOutAndCloseLinks = function listenToLogOutAndCloseLinks() {
+  var links = document.querySelectorAll('.log-out');
+  Array.from(links).forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      logOutAndClose();
     });
   });
 };

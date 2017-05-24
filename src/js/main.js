@@ -1,9 +1,17 @@
-const form = document.querySelector('.sql-form')
-const sqlPrompt = form.querySelector('textarea')
-let favorites = []
-const favoritesWrapper = document.querySelector('.favorites-wrapper')
+let form
+let sqlPrompt
+let favorites
+let favoritesWrapper
 
 const init = () => {
+  if (document.body.classList.contains('logged-out')) {
+    return
+  }
+  form = document.querySelector('.sql-form')
+  sqlPrompt = form.querySelector('textarea')
+  favorites = []
+  favoritesWrapper = document.querySelector('.favorites-wrapper')
+
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
   listenToSidebarTogglerLinks()

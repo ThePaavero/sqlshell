@@ -7,7 +7,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' href='styles.css'>
 </head>
-<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?>'>
+<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
 <div class='app'>
   <?php if ( ! $loggedIn): ?>
     <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
@@ -16,9 +16,12 @@
         <input type='password' name='password' required/>
       </label>
       <input type='submit' value='Log in'/>
+      <?php if ( ! isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on'): ?>
+        <strong class='warning'>Warning! You're sending the password string over a non-secure connection.</strong>
+      <?php endif ?>
     </form> <!-- login-form -->
   <?php else: ?>
-    <a href='#' class='log-out'>✖</a>
+    <a href='#' class='log-out' title='Log out'>✖</a>
     <section>
       <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
         <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
