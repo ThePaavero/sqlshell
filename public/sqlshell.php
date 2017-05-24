@@ -1,20 +1,19 @@
 <?php
 
-session_start();
-
 $shellPassword = 'demo';
+$host = '127.0.0.1';
+$db = 'information_schema';
+$user = 'homestead';
+$pass = 'secret';
+$charset = 'utf8';
+
+session_start();
 
 $loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
 if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
 {
   $_SESSION['sqlshellLoggedIn'] = true;
 }
-
-$host = '127.0.0.1';
-$db = 'information_schema';
-$user = 'homestead';
-$pass = 'secret';
-$charset = 'utf8';
 
 function tablesBarShouldBeOpen()
 {
@@ -217,10 +216,10 @@ pre {
 
 .log-out {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 2vh;
+  right: 2vw;
   color: #fff;
-  font-size: 40px;
+  font-size: 3vw;
   text-decoration: none; }
 </style>
 </head>
