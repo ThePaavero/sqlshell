@@ -11,6 +11,7 @@ const init = () => {
   focusOnSqlPrompt()
   populateFavoritesFromDisk()
   toggleFavoritesFromDisk()
+  listenToLogOutAndCloseLinks()
 }
 
 const listenToSubmitTriggers = () => {
@@ -109,7 +110,6 @@ const showFavorites = () => {
 const hideFavorites = () => {
   window.localStorage.setItem('favorites-open', false)
   favoritesWrapper.classList.remove('open')
-  console.log('CLOSE FAVS')
 }
 
 const deleteLastFavorite = () => {
@@ -172,6 +172,27 @@ const listenToSidebarTogglerLinks = () => {
       })
         .then(console.log)
         .catch(console.error)
+    })
+  })
+}
+
+const logOutAndClose = () => {
+  const url = window.sqlshellData.baseUrl + '?ajax=1&action=LOG_OUT'
+  window.fetch(url, {
+    credentials: 'same-origin'
+  })
+    .then(() => {
+      window.location = window.location.href
+    })
+    .catch(console.error)
+}
+
+const listenToLogOutAndCloseLinks = () => {
+  const links = document.querySelectorAll('.log-out')
+  Array.from(links).forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      logOutAndClose()
     })
   })
 }

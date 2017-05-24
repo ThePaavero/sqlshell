@@ -9,36 +9,47 @@
 </head>
 <body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?>'>
 <div class='app'>
-  <section>
-    <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
-      <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
-      <input type='submit' value='Execute'/>
-    </form> <!-- sql-form -->
-    <div class='in-grid'>
-      <div class='prompt-help'>
-        <small class='submit-on-click'>CTRL + Enter to run query</small>
-        <small>CTRL + S to save query to favorites</small>
-        <small>CTRL + L to toggle list of favorite queries</small>
-        <small>CTRL + D to empty favorites</small>
-      </div><!-- prompt-help -->
-    </div><!-- in-grid -->
-  </section>
-  <div class='displays'>
-    <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
-      <h3>Tables</h3>
-      <div class='tables'>
-      </div><!-- tables -->
-      <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
+  <?php if ( ! $loggedIn): ?>
+    <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
+      <label>
+        Password:
+        <input type='password' name='password' required/>
+      </label>
+      <input type='submit' value='Log in'/>
+    </form> <!-- login-form -->
+  <?php else: ?>
+    <a href='#' class='log-out'>✖</a>
+    <section>
+      <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
+        <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
+        <input type='submit' value='Execute'/>
+      </form> <!-- sql-form -->
+      <div class='in-grid'>
+        <div class='prompt-help'>
+          <small class='submit-on-click'>CTRL + Enter to run query</small>
+          <small>CTRL + S to save query to favorites</small>
+          <small>CTRL + L to toggle list of favorite queries</small>
+          <small>CTRL + D to delete the last favorite</small>
+        </div><!-- prompt-help -->
+      </div><!-- in-grid -->
     </section>
-    <section class='results'>
-      <div class='favorites-wrapper'>
-      </div><!-- favorites-wrapper -->
-      <?php if (isset($results) && ! empty($results)): ?>
-        <h3>Result</h3>
-        <pre><?php echo $results ?></pre>
-      <?php endif; ?>
-    </section>
-  </div><!-- displays -->
+    <div class='displays'>
+      <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
+        <h3>Tables</h3>
+        <div class='tables'>
+        </div><!-- tables -->
+        <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
+      </section>
+      <section class='results'>
+        <div class='favorites-wrapper'>
+        </div><!-- favorites-wrapper -->
+        <?php if (isset($results) && ! empty($results)): ?>
+          <h3>Result</h3>
+          <pre><?php echo $results ?></pre>
+        <?php endif; ?>
+      </section>
+    </div><!-- displays -->
+  <?php endif ?>
 </div><!-- app -->
 <script>
   window.sqlshellData = <?php echo $jsonData ?>

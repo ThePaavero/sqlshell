@@ -4,6 +4,12 @@ session_start();
 
 $shellPassword = 'demo';
 
+$loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
+if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
+{
+  $_SESSION['sqlshellLoggedIn'] = true;
+}
+
 $host = '127.0.0.1';
 $db = 'information_schema';
 $user = 'homestead';
@@ -37,6 +43,9 @@ if (isset($_GET['ajax']))
     case 'SET_TABLES_BAR_OPEN_STATUS':
       $_SESSION['tablesBarShouldBeOpen'] = $_GET['status'] === 'open';
       echo json_encode(['success' => true, 'valueSet' => $_SESSION['tablesBarShouldBeOpen']]);
+      break;
+    case 'LOG_OUT':
+      session_destroy();
       break;
   }
 
