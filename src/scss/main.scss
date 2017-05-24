@@ -141,14 +141,25 @@ pre {
 }
 
 .favorites-wrapper {
-  padding-bottom: 2vh;
+  display: none;
 
-  a {
+  &.open {
     display: block;
-    color: inherit;
-    text-decoration: none;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 3px 5px;
-    margin-bottom: 1px;
+    padding-bottom: 2vh;
+
+    ol {
+      list-style: decimal;
+      list-style-position: inside;
+    }
+
+    li {
+      cursor: pointer;
+      display: list-item;
+      color: inherit;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 5px;
+      margin-bottom: 1px;
+    }
   }
 }

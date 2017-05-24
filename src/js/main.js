@@ -1,7 +1,7 @@
 const form = document.querySelector('.sql-form')
 const sqlPrompt = form.querySelector('textarea')
 const favorites = []
-let favoritesActive = false
+const favoritesWrapper = document.querySelector('.favorites-wrapper')
 
 const init = () => {
   listenToSubmitKeyCombination()
@@ -10,6 +10,7 @@ const init = () => {
   listenToSubmitTriggers()
   focusOnSqlPrompt()
   populateFavoritesFromDisk()
+  toggleFavoritesFromDisk()
 }
 
 const listenToSubmitTriggers = () => {
@@ -68,23 +69,42 @@ const populateFavoritesFromDisk = () => {
   renderFavorites()
 }
 
+const toggleFavoritesFromDisk = () => {
+  let open = window.localStorage.getItem('favorites-open') || false
+  open = open === 'true'
+  if (open === true) {
+    showFavorites()
+  } else {
+    hideFavorites()
+  }
+}
+
 const renderFavorites = () => {
-  console.log(favorites)
-  const wrapper = document.querySelector('.favorites-wrapper')
-  wrapper.innerHTML = '<h3>Favorites</h3>'
-  favorites.map(query => {
-    const link = document.createElement('a')
-    link.href = '#' + query
+  const favoritesReversed = favorites.reverse()
+  favoritesWrapper.innerHTML = '<h3>Favorites</h3>'
+  const orderedList = document.createElement('ol')
+  favoritesReversed.map(query => {
+    const link = document.createElement('li')
+    link.setAttribute('data-query', query)
     link.innerText = query
-    wrapper.appendChild(link)
+    orderedList.appendChild(link)
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      sqlPrompt.value = link.getAttribute('data-query')
+      focusOnSqlPrompt()
+    })
   })
+  favoritesWrapper.appendChild(orderedList)
 }
 
 const showFavorites = () => {
-  favoritesActive = true
+  window.localStorage.setItem('favorites-open', true)
+  favoritesWrapper.classList.add('open')
 }
 const hideFavorites = () => {
-  favoritesActive = false
+  window.localStorage.setItem('favorites-open', false)
+  favoritesWrapper.classList.remove('open')
+  console.log('CLOSE FAVS')
 }
 
 const listenToSubmitKeyCombination = () => {
@@ -102,7 +122,7 @@ const listenToSubmitKeyCombination = () => {
     }
     else if (e.keyCode === 76 && ctrlDown) { // "L"
       e.preventDefault()
-      if (favoritesActive) {
+      if (favoritesWrapper.classList.contains('open')) {
         hideFavorites()
       } else {
         showFavorites()
