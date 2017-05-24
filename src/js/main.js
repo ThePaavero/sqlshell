@@ -1,5 +1,7 @@
 const form = document.querySelector('.sql-form')
 const sqlPrompt = form.querySelector('textarea')
+const favorites = []
+let favoritesActive = false
 
 const init = () => {
   listenToSubmitKeyCombination()
@@ -7,6 +9,7 @@ const init = () => {
   listenToSidebarTogglerLinks()
   listenToSubmitTriggers()
   focusOnSqlPrompt()
+  populateFavoritesFromDisk()
 }
 
 const listenToSubmitTriggers = () => {
@@ -46,14 +49,64 @@ const printTableButtons = (tables) => {
   })
 }
 
+const addQueryToFavorites = () => {
+  const currentQuery = sqlPrompt.value
+  favorites.push(currentQuery)
+  window.localStorage.setItem('favorites', JSON.stringify(favorites))
+  renderFavorites()
+}
+
+const populateFavoritesFromDisk = () => {
+  const fromDisk = window.localStorage.getItem('favorites')
+  if (!fromDisk) {
+    return
+  }
+  const diskFavorites = JSON.parse(fromDisk)
+  diskFavorites.forEach(query => {
+    favorites.push(query)
+  })
+  renderFavorites()
+}
+
+const renderFavorites = () => {
+  console.log(favorites)
+  const wrapper = document.querySelector('.favorites-wrapper')
+  wrapper.innerHTML = '<h3>Favorites</h3>'
+  favorites.map(query => {
+    const link = document.createElement('a')
+    link.href = '#' + query
+    link.innerText = query
+    wrapper.appendChild(link)
+  })
+}
+
+const showFavorites = () => {
+  favoritesActive = true
+}
+const hideFavorites = () => {
+  favoritesActive = false
+}
+
 const listenToSubmitKeyCombination = () => {
   let ctrlDown = false
   document.addEventListener('keydown', e => {
     if (e.keyCode === 17) {
       ctrlDown = true
     }
-    if (e.keyCode === 13 && ctrlDown) {
+    else if (e.keyCode === 13 && ctrlDown) {
       form.submit()
+    }
+    else if (e.keyCode === 83 && ctrlDown) { // "S"
+      e.preventDefault()
+      addQueryToFavorites()
+    }
+    else if (e.keyCode === 76 && ctrlDown) { // "L"
+      e.preventDefault()
+      if (favoritesActive) {
+        hideFavorites()
+      } else {
+        showFavorites()
+      }
     }
   })
   document.addEventListener('keyup', e => {
