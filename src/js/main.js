@@ -1,3 +1,5 @@
+// import EditableCells from './EditableCells'
+
 let form
 let sqlPrompt
 let favorites
@@ -6,6 +8,7 @@ let tablesSection
 let resultsWrapper
 let resultRenderTypeNavLinks
 let renderStyle = 'table'
+let activeTableName
 
 const init = () => {
   if (document.body.classList.contains('logged-out')) {
@@ -19,8 +22,8 @@ const init = () => {
   tablesSection = document.querySelector('.tables-section')
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a')
   renderStyle = getRenderStyle()
-  activateActiveRenderStyleTab()
 
+  activateActiveRenderStyleTab()
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
   listenToSubmitTriggers()
@@ -50,7 +53,8 @@ const focusOnSqlPrompt = () => {
 }
 
 const activateTable = (tableName) => {
-  sqlPrompt.innerText = 'select * from ' + tableName
+  sqlPrompt.innerText = 'select * from ' + tableName + ' limit 20'
+  activeTableName = tableName
   focusOnSqlPrompt()
 }
 
@@ -91,6 +95,9 @@ const populateFavoritesFromDisk = () => {
 }
 
 const toggleFavorites = () => {
+  if (favorites.length < 1) {
+    return
+  }
   const open = favoritesWrapper.classList.contains('open')
   if (open === true) {
     hideFavorites()
@@ -143,6 +150,9 @@ const renderFavorites = () => {
 }
 
 const showFavorites = () => {
+  if (favorites.length < 1) {
+    return
+  }
   window.localStorage.setItem('favorites-open', true)
   favoritesWrapper.classList.add('open')
 }
@@ -331,6 +341,9 @@ const formatResults = (renderStyle) => {
   table.appendChild(tbody)
   resultsWrapper.classList.add('table')
   resultsWrapper.appendChild(table)
+  // if (activeTableName) {
+  //   EditableCells.init(table, sqlPrompt, activeTableName)
+  // }
 }
 
 const getColumnsAsArray = (data) => {

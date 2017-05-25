@@ -2,7 +2,7 @@
 
 $shellPassword = 'demo';
 $host = '127.0.0.1';
-$db = 'information_schema';
+$db = 'mysql';
 $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
@@ -195,7 +195,8 @@ input[type=submit] {
 pre, table.results-table {
   color: #4a9aff;
   background: #000;
-  padding: 2vh 1vw; }
+  padding: 2vh 1vw;
+  min-width: 100%; }
   pre th, table.results-table th {
     color: #fff;
     font-size: 11px;
@@ -311,6 +312,8 @@ pre, table.results-table {
 <script>(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+// import EditableCells from './EditableCells'
+
 var form = void 0;
 var sqlPrompt = void 0;
 var favorites = void 0;
@@ -319,6 +322,7 @@ var tablesSection = void 0;
 var resultsWrapper = void 0;
 var resultRenderTypeNavLinks = void 0;
 var renderStyle = 'table';
+var activeTableName = void 0;
 
 var init = function init() {
   if (document.body.classList.contains('logged-out')) {
@@ -332,8 +336,8 @@ var init = function init() {
   tablesSection = document.querySelector('.tables-section');
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a');
   renderStyle = getRenderStyle();
-  activateActiveRenderStyleTab();
 
+  activateActiveRenderStyleTab();
   listenToSubmitKeyCombination();
   printTableButtons(window.sqlshellData.tables);
   listenToSubmitTriggers();
@@ -363,7 +367,8 @@ var focusOnSqlPrompt = function focusOnSqlPrompt() {
 };
 
 var activateTable = function activateTable(tableName) {
-  sqlPrompt.innerText = 'select * from ' + tableName;
+  sqlPrompt.innerText = 'select * from ' + tableName + ' limit 20';
+  activeTableName = tableName;
   focusOnSqlPrompt();
 };
 
@@ -404,6 +409,9 @@ var populateFavoritesFromDisk = function populateFavoritesFromDisk() {
 };
 
 var toggleFavorites = function toggleFavorites() {
+  if (favorites.length < 1) {
+    return;
+  }
   var open = favoritesWrapper.classList.contains('open');
   if (open === true) {
     hideFavorites();
@@ -456,6 +464,9 @@ var renderFavorites = function renderFavorites() {
 };
 
 var showFavorites = function showFavorites() {
+  if (favorites.length < 1) {
+    return;
+  }
   window.localStorage.setItem('favorites-open', true);
   favoritesWrapper.classList.add('open');
 };
@@ -642,6 +653,9 @@ var formatResults = function formatResults(renderStyle) {
   table.appendChild(tbody);
   resultsWrapper.classList.add('table');
   resultsWrapper.appendChild(table);
+  // if (activeTableName) {
+  //   EditableCells.init(table, sqlPrompt, activeTableName)
+  // }
 };
 
 var getColumnsAsArray = function getColumnsAsArray(data) {

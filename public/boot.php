@@ -2,7 +2,7 @@
 
 $shellPassword = 'demo';
 $host = '127.0.0.1';
-$db = 'information_schema';
+$db = 'mysql';
 $user = 'homestead';
 $pass = 'secret';
 $charset = 'utf8';
