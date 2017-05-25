@@ -352,6 +352,7 @@ var TableAutoCompleter = function TableAutoCompleter(prompt, tableNames, links) 
 
       if (lastWord.length < 2) {
         offerActive = false;
+        renderTableButtons();
         return;
       }
 
@@ -363,7 +364,6 @@ var TableAutoCompleter = function TableAutoCompleter(prompt, tableNames, links) 
 
       if (matches.length < 1) {
         offerActive = false;
-        console.log('No matches');
         return;
       } else {
         offerActive = matches[0];
