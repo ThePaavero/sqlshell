@@ -719,6 +719,9 @@ var formatResults = function formatResults(renderStyle) {
   }
   activateActiveRenderStyleTab();
   var pre = document.querySelector('.results-wrapper > pre');
+  if (!pre) {
+    return;
+  }
   var resultJson = pre.innerText;
   var results = JSON.parse(resultJson);
   var columns = getColumnsAsArray(results);

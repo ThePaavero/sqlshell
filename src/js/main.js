@@ -326,6 +326,9 @@ const formatResults = (renderStyle) => {
   }
   activateActiveRenderStyleTab()
   const pre = document.querySelector('.results-wrapper > pre')
+  if (!pre) {
+    return
+  }
   const resultJson = pre.innerText
   const results = JSON.parse(resultJson)
   const columns = getColumnsAsArray(results)
