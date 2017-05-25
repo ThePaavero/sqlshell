@@ -50,6 +50,12 @@
         <?php if (isset($results) && ! empty($results)): ?>
           <h3>Result</h3>
           <div class='results-wrapper'>
+            <nav>
+              <ul>
+                <li><a href='#json'>JSON</a></li>
+                <li><a href='#table'>Table</a></li>
+              </ul>
+            </nav>
             <pre><?php echo $results ?></pre>
           </div><!-- results-wrapper -->
         <?php endif; ?>

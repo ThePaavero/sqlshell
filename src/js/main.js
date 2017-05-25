@@ -4,6 +4,8 @@ let favorites
 let favoritesWrapper
 let tablesSection
 let resultsWrapper
+let resultRenderTypeNavLinks
+let renderStyle = 'table'
 
 const init = () => {
   if (document.body.classList.contains('logged-out')) {
@@ -15,6 +17,8 @@ const init = () => {
   favorites = []
   favoritesWrapper = document.querySelector('.favorites-wrapper')
   tablesSection = document.querySelector('.tables-section')
+  resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a')
+  renderStyle = getRenderStyle()
 
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
@@ -25,7 +29,8 @@ const init = () => {
   toggleTablesFromDisk()
   listenToLogOutAndCloseLinks()
   listenToLegendLinks()
-  formatResults()
+  attachResultRenderTabs()
+  formatResults(renderStyle)
 }
 
 const listenToSubmitTriggers = () => {
@@ -274,12 +279,23 @@ const dispatchAction = (action) => {
   }
 }
 
-const formatResults = () => {
+const removeResultsTable = () => {
+  const oldTable = document.querySelector('table.results-table')
+  if (oldTable) {
+    oldTable.remove()
+  }
+}
+
+const formatResults = (renderStyle) => {
+  removeResultsTable()
+  if (renderStyle !== 'table') {
+    resultsWrapper.classList.remove('table')
+    return
+  }
   const pre = document.querySelector('.results-wrapper > pre')
   const resultJson = pre.innerText
   const results = JSON.parse(resultJson)
   const columns = getColumnsAsArray(results)
-  console.log(columns)
   const table = document.createElement('table')
   table.classList.add('results-table')
   const thead = document.createElement('thead')
@@ -296,14 +312,13 @@ const formatResults = () => {
     const tr = document.createElement('tr')
     columns.forEach(colName => {
       const td = document.createElement('td')
-      td.innerText = row[colName] || '-'
+      td.innerText = row[colName] || ''
       tr.appendChild(td)
     })
     tbody.appendChild(tr)
   })
   table.appendChild(tbody)
-
-  // resultsWrapper.removeChild(pre)
+  resultsWrapper.classList.add('table')
   resultsWrapper.appendChild(table)
 }
 
@@ -311,6 +326,25 @@ const getColumnsAsArray = (data) => {
   return Object.keys(data.reduce((result, obj) => {
     return Object.assign(result, obj)
   }, {}))
+}
+
+const attachResultRenderTabs = () => {
+  Array.from(resultRenderTypeNavLinks).forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      setRenderStyle(link.getAttribute('href').split('#')[1])
+    })
+  })
+}
+
+const getRenderStyle = () => {
+  renderStyle = window.localStorage.getItem('render-style') || 'table'
+  return renderStyle
+}
+
+const setRenderStyle = (style) => {
+  window.localStorage.setItem('render-style', style)
+  formatResults(style)
 }
 
 init()
