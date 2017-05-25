@@ -174,25 +174,38 @@ input[type=submit] {
   .table-button:hover {
     background: rgba(255, 255, 255, 0.1); }
 
-pre {
-  color: #4a9aff;
-  background: #000;
-  padding: 2vh 1vw;
+.results-wrapper {
   max-width: 100%;
   overflow: auto; }
+  .results-wrapper.table pre {
+    display: none; }
+  .results-wrapper nav ul li {
+    display: inline-block; }
+    .results-wrapper nav ul li a {
+      display: block;
+      color: inherit;
+      opacity: 0.5;
+      text-decoration: none;
+      padding: 3px 5px;
+      margin-right: 1px; }
+      .results-wrapper nav ul li a.active {
+        background: #000;
+        opacity: 1; }
 
-.bar-toggler {
-  /*position: absolute;
-  //top: 50%;
-  top: 0;
-  //transform: translateY(-50%);
-  right: 0;
-  height: 100%;
-  background: blue;*/
-  color: inherit;
-  text-decoration: none; }
-  .open .bar-toggler {
-    transform: rotate(180deg); }
+pre, table.results-table {
+  color: #4a9aff;
+  background: #000;
+  padding: 2vh 1vw; }
+  pre th, table.results-table th {
+    color: #fff;
+    font-size: 11px;
+    padding-right: 1vw;
+    padding-bottom: 10px; }
+  pre td, table.results-table td {
+    font-size: 11px;
+    vertical-align: top; }
+  pre tbody tr:nth-child(odd), table.results-table tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.1); }
 
 .prompt-help {
   margin: 1vh 0; }
@@ -278,7 +291,15 @@ pre {
         </div><!-- favorites-wrapper -->
         <?php if (isset($results) && ! empty($results)): ?>
           <h3>Result</h3>
-          <pre><?php echo $results ?></pre>
+          <div class='results-wrapper'>
+            <nav>
+              <ul>
+                <li><a href='#json'>JSON</a></li>
+                <li><a href='#table'>Table</a></li>
+              </ul>
+            </nav>
+            <pre><?php echo $results ?></pre>
+          </div><!-- results-wrapper -->
         <?php endif; ?>
       </section>
     </div><!-- displays -->
@@ -295,16 +316,23 @@ var sqlPrompt = void 0;
 var favorites = void 0;
 var favoritesWrapper = void 0;
 var tablesSection = void 0;
+var resultsWrapper = void 0;
+var resultRenderTypeNavLinks = void 0;
+var renderStyle = 'table';
 
 var init = function init() {
   if (document.body.classList.contains('logged-out')) {
     return;
   }
+  resultsWrapper = document.querySelector('.results-wrapper');
   form = document.querySelector('.sql-form');
   sqlPrompt = form.querySelector('textarea');
   favorites = [];
   favoritesWrapper = document.querySelector('.favorites-wrapper');
   tablesSection = document.querySelector('.tables-section');
+  resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a');
+  renderStyle = getRenderStyle();
+  activateActiveRenderStyleTab();
 
   listenToSubmitKeyCombination();
   printTableButtons(window.sqlshellData.tables);
@@ -315,6 +343,8 @@ var init = function init() {
   toggleTablesFromDisk();
   listenToLogOutAndCloseLinks();
   listenToLegendLinks();
+  attachResultRenderTabs();
+  formatResults(renderStyle);
 };
 
 var listenToSubmitTriggers = function listenToSubmitTriggers() {
@@ -559,6 +589,86 @@ var dispatchAction = function dispatchAction(action) {
       focusOnSqlPrompt();
       break;
   }
+};
+
+var removeResultsTable = function removeResultsTable() {
+  var oldTable = document.querySelector('table.results-table');
+  if (oldTable) {
+    oldTable.remove();
+  }
+};
+
+var activateActiveRenderStyleTab = function activateActiveRenderStyleTab() {
+  Array.from(resultRenderTypeNavLinks).forEach(function (link) {
+    link.classList.remove('active');
+    if (link.getAttribute('href').split('#')[1] === renderStyle) {
+      link.classList.add('active');
+    }
+  });
+};
+
+var formatResults = function formatResults(renderStyle) {
+  removeResultsTable();
+  if (renderStyle !== 'table') {
+    resultsWrapper.classList.remove('table');
+    return;
+  }
+  activateActiveRenderStyleTab();
+  var pre = document.querySelector('.results-wrapper > pre');
+  var resultJson = pre.innerText;
+  var results = JSON.parse(resultJson);
+  var columns = getColumnsAsArray(results);
+  var table = document.createElement('table');
+  table.classList.add('results-table');
+  var thead = document.createElement('thead');
+  var tbody = document.createElement('tbody');
+  var firstRow = document.createElement('tr');
+  columns.forEach(function (colName) {
+    var th = document.createElement('th');
+    th.innerText = colName;
+    firstRow.appendChild(th);
+  });
+  thead.appendChild(firstRow);
+  table.appendChild(thead);
+  results.forEach(function (row) {
+    var tr = document.createElement('tr');
+    columns.forEach(function (colName) {
+      var td = document.createElement('td');
+      td.innerText = row[colName] || '';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  resultsWrapper.classList.add('table');
+  resultsWrapper.appendChild(table);
+};
+
+var getColumnsAsArray = function getColumnsAsArray(data) {
+  return Object.keys(data.reduce(function (result, obj) {
+    return Object.assign(result, obj);
+  }, {}));
+};
+
+var attachResultRenderTabs = function attachResultRenderTabs() {
+  Array.from(resultRenderTypeNavLinks).forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      setRenderStyle(link.getAttribute('href').split('#')[1]);
+    });
+  });
+};
+
+var getRenderStyle = function getRenderStyle() {
+  renderStyle = window.localStorage.getItem('render-style') || renderStyle;
+  return renderStyle;
+};
+
+var setRenderStyle = function setRenderStyle(style) {
+  renderStyle = style;
+  window.localStorage.setItem('render-style', style);
+  formatResults(style);
+  activateActiveRenderStyleTab();
 };
 
 init();

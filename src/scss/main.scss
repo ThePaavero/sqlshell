@@ -127,10 +127,14 @@ input[type=submit] {
         a {
           display: block;
           color: inherit;
+          opacity: 0.5;
           text-decoration: none;
+          padding: 3px 5px;
+          margin-right: 1px;
 
           &.active {
             background: #000;
+            opacity: 1;
           }
         }
       }
@@ -152,6 +156,7 @@ pre, table.results-table {
 
   td {
     font-size: 11px;
+    vertical-align: top;
   }
 
   tbody tr {
@@ -159,23 +164,6 @@ pre, table.results-table {
     &:nth-child(odd) {
       background: rgba(255, 255, 255, 0.1);
     }
-  }
-}
-
-.bar-toggler {
-  /*position: absolute;
-  //top: 50%;
-  top: 0;
-  //transform: translateY(-50%);
-  right: 0;
-  height: 100%;
-  background: blue;*/
-  color: inherit;
-  text-decoration: none;
-
-  .open & {
-    //transform: translateY(-50%) rotate(180deg);
-    transform: rotate(180deg);
   }
 }
 

@@ -19,6 +19,7 @@ const init = () => {
   tablesSection = document.querySelector('.tables-section')
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a')
   renderStyle = getRenderStyle()
+  activateActiveRenderStyleTab()
 
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
@@ -286,12 +287,22 @@ const removeResultsTable = () => {
   }
 }
 
+const activateActiveRenderStyleTab = () => {
+  Array.from(resultRenderTypeNavLinks).forEach(link => {
+    link.classList.remove('active')
+    if (link.getAttribute('href').split('#')[1] === renderStyle) {
+      link.classList.add('active')
+    }
+  })
+}
+
 const formatResults = (renderStyle) => {
   removeResultsTable()
   if (renderStyle !== 'table') {
     resultsWrapper.classList.remove('table')
     return
   }
+  activateActiveRenderStyleTab()
   const pre = document.querySelector('.results-wrapper > pre')
   const resultJson = pre.innerText
   const results = JSON.parse(resultJson)
@@ -338,13 +349,15 @@ const attachResultRenderTabs = () => {
 }
 
 const getRenderStyle = () => {
-  renderStyle = window.localStorage.getItem('render-style') || 'table'
+  renderStyle = window.localStorage.getItem('render-style') || renderStyle
   return renderStyle
 }
 
 const setRenderStyle = (style) => {
+  renderStyle = style
   window.localStorage.setItem('render-style', style)
   formatResults(style)
+  activateActiveRenderStyleTab()
 }
 
 init()
