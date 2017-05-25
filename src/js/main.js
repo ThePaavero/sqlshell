@@ -91,12 +91,12 @@ const toggleFavoritesFromDisk = () => {
 }
 
 const toggleTablesFromDisk = () => {
-  let open = window.localStorage.getItem('tables-open') || false
+  let open = window.localStorage.getItem('tables-open') || 'true'
   open = open === 'true'
   if (open === true) {
-
+    showTablesSection()
   } else {
-    toggleTablesSection()
+    hideTablesSection()
   }
 }
 
@@ -181,10 +181,24 @@ const listenToSubmitKeyCombination = () => {
 }
 
 const toggleTablesSection = () => {
-  tablesSection.classList.toggle('open')
-  document.body.classList.toggle('barTogglerOpen')
   const open = document.body.classList.contains('barTogglerOpen')
-  window.localStorage.setItem('tables-open', open)
+  if (open) {
+    hideTablesSection()
+  } else {
+    showTablesSection()
+  }
+}
+
+const showTablesSection = () => {
+  tablesSection.classList.add('open')
+  document.body.classList.add('barTogglerOpen')
+  window.localStorage.setItem('tables-open', true)
+}
+
+const hideTablesSection = () => {
+  tablesSection.classList.remove('open')
+  document.body.classList.remove('barTogglerOpen')
+  window.localStorage.setItem('tables-open', false)
 }
 
 const logOutAndClose = () => {
