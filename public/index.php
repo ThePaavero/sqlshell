@@ -49,7 +49,9 @@
         </div><!-- favorites-wrapper -->
         <?php if (isset($results) && ! empty($results)): ?>
           <h3>Result</h3>
-          <pre><?php echo $results ?></pre>
+          <div class='results-wrapper'>
+            <pre><?php echo $results ?></pre>
+          </div><!-- results-wrapper -->
         <?php endif; ?>
       </section>
     </div><!-- displays -->

@@ -3,11 +3,13 @@ let sqlPrompt
 let favorites
 let favoritesWrapper
 let tablesSection
+let resultsWrapper
 
 const init = () => {
   if (document.body.classList.contains('logged-out')) {
     return
   }
+  resultsWrapper = document.querySelector('.results-wrapper')
   form = document.querySelector('.sql-form')
   sqlPrompt = form.querySelector('textarea')
   favorites = []
@@ -23,6 +25,7 @@ const init = () => {
   toggleTablesFromDisk()
   listenToLogOutAndCloseLinks()
   listenToLegendLinks()
+  formatResults()
 }
 
 const listenToSubmitTriggers = () => {
@@ -269,6 +272,45 @@ const dispatchAction = (action) => {
       focusOnSqlPrompt()
       break
   }
+}
+
+const formatResults = () => {
+  const pre = document.querySelector('.results-wrapper > pre')
+  const resultJson = pre.innerText
+  const results = JSON.parse(resultJson)
+  const columns = getColumnsAsArray(results)
+  console.log(columns)
+  const table = document.createElement('table')
+  table.classList.add('results-table')
+  const thead = document.createElement('thead')
+  const tbody = document.createElement('tbody')
+  const firstRow = document.createElement('tr')
+  columns.forEach(colName => {
+    const th = document.createElement('th')
+    th.innerText = colName
+    firstRow.appendChild(th)
+  })
+  thead.appendChild(firstRow)
+  table.appendChild(thead)
+  results.forEach(row => {
+    const tr = document.createElement('tr')
+    columns.forEach(colName => {
+      const td = document.createElement('td')
+      td.innerText = row[colName] || '-'
+      tr.appendChild(td)
+    })
+    tbody.appendChild(tr)
+  })
+  table.appendChild(tbody)
+
+  // resultsWrapper.removeChild(pre)
+  resultsWrapper.appendChild(table)
+}
+
+const getColumnsAsArray = (data) => {
+  return Object.keys(data.reduce((result, obj) => {
+    return Object.assign(result, obj)
+  }, {}))
 }
 
 init()
