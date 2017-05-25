@@ -29,7 +29,8 @@
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>
-          <small class='submit-on-click'>CTRL + Enter to run query</small>
+          <small>CTRL + Enter to run query</small>
+          <small>CTRL + B to toggle list of tables</small>
           <small>CTRL + S to save query to favorites</small>
           <small>CTRL + L to toggle list of favorite queries</small>
           <small>CTRL + D to delete the last favorite</small>
@@ -41,7 +42,6 @@
         <h3>Tables</h3>
         <div class='tables'>
         </div><!-- tables -->
-        <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
       </section>
       <section class='results'>
         <div class='favorites-wrapper'>

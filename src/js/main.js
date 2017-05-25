@@ -2,6 +2,7 @@ let form
 let sqlPrompt
 let favorites
 let favoritesWrapper
+let tablesSection
 
 const init = () => {
   if (document.body.classList.contains('logged-out')) {
@@ -11,14 +12,15 @@ const init = () => {
   sqlPrompt = form.querySelector('textarea')
   favorites = []
   favoritesWrapper = document.querySelector('.favorites-wrapper')
+  tablesSection = document.querySelector('.tables-section')
 
   listenToSubmitKeyCombination()
   printTableButtons(window.sqlshellData.tables)
-  listenToSidebarTogglerLinks()
   listenToSubmitTriggers()
   focusOnSqlPrompt()
   populateFavoritesFromDisk()
   toggleFavoritesFromDisk()
+  toggleTablesFromDisk()
   listenToLogOutAndCloseLinks()
 }
 
@@ -88,6 +90,16 @@ const toggleFavoritesFromDisk = () => {
   }
 }
 
+const toggleTablesFromDisk = () => {
+  let open = window.localStorage.getItem('tables-open') || false
+  open = open === 'true'
+  if (open === true) {
+
+  } else {
+    toggleTablesSection()
+  }
+}
+
 const renderFavorites = () => {
   favorites = favorites.reverse()
   if (favorites.length < 1) {
@@ -143,6 +155,10 @@ const listenToSubmitKeyCombination = () => {
       addQueryToFavorites()
       showFavorites()
     }
+    else if (e.keyCode === 66 && ctrlDown) { // "B"
+      e.preventDefault()
+      toggleTablesSection()
+    }
     else if (e.keyCode === 76 && ctrlDown) { // "L"
       e.preventDefault()
       if (favoritesWrapper.classList.contains('open')) {
@@ -164,24 +180,11 @@ const listenToSubmitKeyCombination = () => {
   })
 }
 
-const listenToSidebarTogglerLinks = () => {
-  const links = document.querySelectorAll('.bar-toggler')
-  Array.from(links).forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault()
-      const toToggle = e.currentTarget.parentNode
-      link.classList.toggle('open')
-      toToggle.classList.toggle('open')
-      document.body.classList.toggle('barTogglerOpen')
-      const open = toToggle.classList.contains('open') ? 'open' : ''
-      const url = window.sqlshellData.baseUrl + '?ajax=1&action=SET_TABLES_BAR_OPEN_STATUS&status=' + open
-      window.fetch(url, {
-        credentials: 'same-origin'
-      })
-        .then(console.log)
-        .catch(console.error)
-    })
-  })
+const toggleTablesSection = () => {
+  tablesSection.classList.toggle('open')
+  document.body.classList.toggle('barTogglerOpen')
+  const open = document.body.classList.contains('barTogglerOpen')
+  window.localStorage.setItem('tables-open', open)
 }
 
 const logOutAndClose = () => {

@@ -115,16 +115,14 @@ small {
   padding: 20px 0; }
 
 .tables-section {
-  width: 20px;
-  overflow: hidden;
-  margin-right: 2vw; }
-  .tables-section h3 {
-    display: none; }
+  display: none; }
   .tables-section.open {
+    display: block;
     width: 25%;
-    padding-right: 2vw; }
-    .tables-section.open h3 {
-      display: block; }
+    padding-right: 1vw; }
+    @media screen and (max-width: 700px) {
+      .tables-section.open {
+        width: 100%; } }
 
 .displays {
   display: flex;
@@ -132,6 +130,9 @@ small {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start; }
+  @media screen and (max-width: 700px) {
+    .displays {
+      display: block; } }
   .displays section {
     position: relative; }
     .displays section.results {
@@ -181,14 +182,17 @@ pre {
   overflow: auto; }
 
 .bar-toggler {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  /*position: absolute;
+  //top: 50%;
+  top: 0;
+  //transform: translateY(-50%);
   right: 0;
+  height: 100%;
+  background: blue;*/
   color: inherit;
   text-decoration: none; }
   .open .bar-toggler {
-    transform: translateY(-50%) rotate(180deg); }
+    transform: rotate(180deg); }
 
 .prompt-help {
   margin: 1vh 0; }
@@ -251,7 +255,8 @@ pre {
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>
-          <small class='submit-on-click'>CTRL + Enter to run query</small>
+          <small>CTRL + Enter to run query</small>
+          <small>CTRL + B to toggle list of tables</small>
           <small>CTRL + S to save query to favorites</small>
           <small>CTRL + L to toggle list of favorite queries</small>
           <small>CTRL + D to delete the last favorite</small>
@@ -263,7 +268,6 @@ pre {
         <h3>Tables</h3>
         <div class='tables'>
         </div><!-- tables -->
-        <a href='#' class='bar-toggler open' title='Toggle table list'>▸</a>
       </section>
       <section class='results'>
         <div class='favorites-wrapper'>
@@ -286,6 +290,7 @@ var form = void 0;
 var sqlPrompt = void 0;
 var favorites = void 0;
 var favoritesWrapper = void 0;
+var tablesSection = void 0;
 
 var init = function init() {
   if (document.body.classList.contains('logged-out')) {
@@ -295,14 +300,15 @@ var init = function init() {
   sqlPrompt = form.querySelector('textarea');
   favorites = [];
   favoritesWrapper = document.querySelector('.favorites-wrapper');
+  tablesSection = document.querySelector('.tables-section');
 
   listenToSubmitKeyCombination();
   printTableButtons(window.sqlshellData.tables);
-  listenToSidebarTogglerLinks();
   listenToSubmitTriggers();
   focusOnSqlPrompt();
   populateFavoritesFromDisk();
   toggleFavoritesFromDisk();
+  toggleTablesFromDisk();
   listenToLogOutAndCloseLinks();
 };
 
@@ -372,6 +378,14 @@ var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
   }
 };
 
+var toggleTablesFromDisk = function toggleTablesFromDisk() {
+  var open = window.localStorage.getItem('tables-open') || false;
+  open = open === 'true';
+  if (open === true) {} else {
+    toggleTablesSection();
+  }
+};
+
 var renderFavorites = function renderFavorites() {
   favorites = favorites.reverse();
   if (favorites.length < 1) {
@@ -425,6 +439,10 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
       e.preventDefault();
       addQueryToFavorites();
       showFavorites();
+    } else if (e.keyCode === 66 && ctrlDown) {
+      // "B"
+      e.preventDefault();
+      toggleTablesSection();
     } else if (e.keyCode === 76 && ctrlDown) {
       // "L"
       e.preventDefault();
@@ -447,22 +465,11 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
   });
 };
 
-var listenToSidebarTogglerLinks = function listenToSidebarTogglerLinks() {
-  var links = document.querySelectorAll('.bar-toggler');
-  Array.from(links).forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      var toToggle = e.currentTarget.parentNode;
-      link.classList.toggle('open');
-      toToggle.classList.toggle('open');
-      document.body.classList.toggle('barTogglerOpen');
-      var open = toToggle.classList.contains('open') ? 'open' : '';
-      var url = window.sqlshellData.baseUrl + '?ajax=1&action=SET_TABLES_BAR_OPEN_STATUS&status=' + open;
-      window.fetch(url, {
-        credentials: 'same-origin'
-      }).then(console.log).catch(console.error);
-    });
-  });
+var toggleTablesSection = function toggleTablesSection() {
+  tablesSection.classList.toggle('open');
+  document.body.classList.toggle('barTogglerOpen');
+  var open = document.body.classList.contains('barTogglerOpen');
+  window.localStorage.setItem('tables-open', open);
 };
 
 var logOutAndClose = function logOutAndClose() {
