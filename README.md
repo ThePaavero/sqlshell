@@ -10,6 +10,7 @@ Single file database tool inspired by phpminiadmin.
 * Delete saved favorites (CTRL + D - hold down to rapidly remove all)
 
 ## Installation
+* Download the [bundle file](https://raw.githubusercontent.com/ThePaavero/sqlshell/master/public/sqlshell.php)
 * Edit the file, enter your configuration
 * Upload the file to your server
 
