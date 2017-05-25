@@ -263,6 +263,7 @@ pre {
           <small data-action='toggle-favorites'>CTRL + L to toggle list of favorite queries</small>
           <small data-action='save-query-to-favorites'>CTRL + S to save query to favorites</small>
           <small data-action='delete-last-favorite'>CTRL + D to delete the last favorite</small>
+          <small data-action='focus-on-prompt'>ESC to focus on prompt</small>
         </div><!-- prompt-help -->
       </div><!-- in-grid -->
     </section>
@@ -445,6 +446,10 @@ var saveFavoritesToDisk = function saveFavoritesToDisk() {
 var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
   var ctrlDown = false;
   document.addEventListener('keydown', function (e) {
+    if (e.keyCode === 27) {
+      // "ESC"
+      focusOnSqlPrompt();
+    }
     if (e.keyCode === 17) {
       ctrlDown = true;
     } else if (e.keyCode === 13 && ctrlDown) {
@@ -549,6 +554,9 @@ var dispatchAction = function dispatchAction(action) {
     case 'delete-last-favorite':
       deleteLastFavorite();
       renderFavorites();
+      break;
+    case 'focus-on-prompt':
+      focusOnSqlPrompt();
       break;
   }
 };
