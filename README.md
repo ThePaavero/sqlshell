@@ -5,9 +5,9 @@ Single file database tool inspired by phpminiadmin.
 
 ## Features
 * Write SQL queries and run them (CTRL + S)
-* Save queries as "favorites" and run them later again
-* Delete favorites
 * Lists available tables
+* Save queries as "favorites" and run them again later
+* Delete saved favorites
 
 ## Installation
 * Edit the file, enter your configuration
