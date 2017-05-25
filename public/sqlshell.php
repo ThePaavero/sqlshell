@@ -173,6 +173,8 @@ input[type=submit] {
     padding: 0.5vh 1vw; }
   .table-button:hover {
     background: rgba(255, 255, 255, 0.1); }
+  .table-button.autocomplete-candidate {
+    border: solid 1px greenyellow; }
 
 .results-wrapper {
   max-width: 100%;
@@ -312,13 +314,93 @@ pre, table.results-table {
 <script>(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-// import EditableCells from './EditableCells'
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var TableAutoCompleter = function TableAutoCompleter(prompt, tableNames, links) {
 
-var form = void 0;
+  var offerActive = false;
+
+  var init = function init() {
+    listenToPrompt();
+    listenToEnter();
+  };
+
+  var listenToEnter = function listenToEnter() {
+    document.addEventListener('keydown', function (e) {
+      if (e.keyCode === 9 && offerActive) {
+        // "Tab"
+        e.preventDefault();
+        injectOffer(offerActive);
+      }
+    });
+  };
+
+  var injectOffer = function injectOffer(tableName) {
+    var query = prompt.value;
+    prompt.value = query.replace(getLastWord(query), tableName) + ' ';
+  };
+
+  var getLastWord = function getLastWord(str) {
+    var words = str.split(' ');
+    return words[words.length - 1];
+  };
+
+  var listenToPrompt = function listenToPrompt() {
+    prompt.addEventListener('keyup', function (e) {
+      var lastWord = getLastWord(prompt.value);
+
+      if (lastWord.length < 2) {
+        offerActive = false;
+        return;
+      }
+
+      var matches = tableNames.filter(function (tableName) {
+        if (tableName.startsWith(lastWord)) {
+          return true;
+        }
+      });
+
+      if (matches.length < 1) {
+        offerActive = false;
+        console.log('No matches');
+        return;
+      } else {
+        offerActive = matches[0];
+      }
+
+      renderTableButtons();
+    });
+  };
+
+  var renderTableButtons = function renderTableButtons() {
+    links.forEach(function (link) {
+      var method = link.getAttribute('href').split('#')[1] === offerActive ? 'add' : 'remove';
+      link.classList[method]('autocomplete-candidate');
+    });
+  };
+
+  init();
+};
+
+exports.default = TableAutoCompleter;
+
+},{}],2:[function(require,module,exports){
+'use strict';
+
+var _TableAutoCompleter = require('./TableAutoCompleter');
+
+var _TableAutoCompleter2 = _interopRequireDefault(_TableAutoCompleter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var form = void 0; // import EditableCells from './EditableCells'
+
 var sqlPrompt = void 0;
 var favorites = void 0;
 var favoritesWrapper = void 0;
 var tablesSection = void 0;
+var tableLinks = void 0;
 var resultsWrapper = void 0;
 var resultRenderTypeNavLinks = void 0;
 var renderStyle = 'table';
@@ -339,7 +421,7 @@ var init = function init() {
 
   activateActiveRenderStyleTab();
   listenToSubmitKeyCombination();
-  printTableButtons(window.sqlshellData.tables);
+  tableLinks = printTableButtons(window.sqlshellData.tables);
   listenToSubmitTriggers();
   focusOnSqlPrompt();
   populateFavoritesFromDisk();
@@ -349,6 +431,13 @@ var init = function init() {
   listenToLegendLinks();
   attachResultRenderTabs();
   formatResults(renderStyle);
+  (0, _TableAutoCompleter2.default)(sqlPrompt, getTablesList(), tableLinks);
+};
+
+var getTablesList = function getTablesList() {
+  return window.sqlshellData.tables.map(function (obj) {
+    return obj[Object.keys(obj)[0]];
+  });
 };
 
 var listenToSubmitTriggers = function listenToSubmitTriggers() {
@@ -374,6 +463,7 @@ var activateTable = function activateTable(tableName) {
 
 var printTableButtons = function printTableButtons(tables) {
   var wrapper = document.querySelector('.tables');
+  var links = [];
   tables.map(function (row) {
     var myKey = Object.keys(row)[0];
     var tableName = row[myKey];
@@ -386,7 +476,9 @@ var printTableButtons = function printTableButtons(tables) {
       activateTable(tableName);
     });
     wrapper.appendChild(link);
+    links.push(link);
   });
+  return links;
 };
 
 var addQueryToFavorites = function addQueryToFavorites() {
@@ -494,6 +586,7 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
     if (e.keyCode === 17) {
       ctrlDown = true;
     } else if (e.keyCode === 13 && ctrlDown) {
+      // "Enter"
       form.submit();
     } else if (e.keyCode === 83 && ctrlDown) {
       // "S"
@@ -687,7 +780,7 @@ var setRenderStyle = function setRenderStyle(style) {
 
 init();
 
-},{}]},{},[1]);
+},{"./TableAutoCompleter":1}]},{},[2]);
 </script>
 </body>
 </html>

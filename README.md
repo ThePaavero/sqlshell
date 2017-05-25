@@ -9,6 +9,7 @@ Single file database tool inspired by phpminiadmin.
 * Lists available tables (CTRL + B)
 * Save queries as "favorites" and run them again later (CTRL + S)
 * Delete saved favorites (CTRL + D - hold down to rapidly remove all)
+* Autocomplete to closest table name (TAB)
 
 ## Installation
 * Download the [bundle file](https://raw.githubusercontent.com/ThePaavero/sqlshell/master/public/sqlshell.php)
