@@ -344,6 +344,7 @@ const formatResults = (renderStyle) => {
   })
   thead.appendChild(firstRow)
   table.appendChild(thead)
+  const rowsFragment = document.createDocumentFragment()
   results.forEach(row => {
     const tr = document.createElement('tr')
     columns.forEach(colName => {
@@ -351,8 +352,9 @@ const formatResults = (renderStyle) => {
       td.innerText = row[colName] || ''
       tr.appendChild(td)
     })
-    tbody.appendChild(tr)
+    rowsFragment.appendChild(tr)
   })
+  tbody.appendChild(rowsFragment)
   table.appendChild(tbody)
   resultsWrapper.classList.add('table')
   resultsWrapper.appendChild(table)

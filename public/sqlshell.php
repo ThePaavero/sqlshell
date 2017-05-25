@@ -737,6 +737,7 @@ var formatResults = function formatResults(renderStyle) {
   });
   thead.appendChild(firstRow);
   table.appendChild(thead);
+  var rowsFragment = document.createDocumentFragment();
   results.forEach(function (row) {
     var tr = document.createElement('tr');
     columns.forEach(function (colName) {
@@ -744,8 +745,9 @@ var formatResults = function formatResults(renderStyle) {
       td.innerText = row[colName] || '';
       tr.appendChild(td);
     });
-    tbody.appendChild(tr);
+    rowsFragment.appendChild(tr);
   });
+  tbody.appendChild(rowsFragment);
   table.appendChild(tbody);
   resultsWrapper.classList.add('table');
   resultsWrapper.appendChild(table);
