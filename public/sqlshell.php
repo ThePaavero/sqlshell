@@ -379,10 +379,12 @@ var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
 };
 
 var toggleTablesFromDisk = function toggleTablesFromDisk() {
-  var open = window.localStorage.getItem('tables-open') || false;
+  var open = window.localStorage.getItem('tables-open') || 'true';
   open = open === 'true';
-  if (open === true) {} else {
-    toggleTablesSection();
+  if (open === true) {
+    showTablesSection();
+  } else {
+    hideTablesSection();
   }
 };
 
@@ -466,10 +468,24 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
 };
 
 var toggleTablesSection = function toggleTablesSection() {
-  tablesSection.classList.toggle('open');
-  document.body.classList.toggle('barTogglerOpen');
   var open = document.body.classList.contains('barTogglerOpen');
-  window.localStorage.setItem('tables-open', open);
+  if (open) {
+    hideTablesSection();
+  } else {
+    showTablesSection();
+  }
+};
+
+var showTablesSection = function showTablesSection() {
+  tablesSection.classList.add('open');
+  document.body.classList.add('barTogglerOpen');
+  window.localStorage.setItem('tables-open', true);
+};
+
+var hideTablesSection = function hideTablesSection() {
+  tablesSection.classList.remove('open');
+  document.body.classList.remove('barTogglerOpen');
+  window.localStorage.setItem('tables-open', false);
 };
 
 var logOutAndClose = function logOutAndClose() {
