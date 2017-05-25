@@ -154,6 +154,9 @@ const saveFavoritesToDisk = () => {
 const listenToSubmitKeyCombination = () => {
   let ctrlDown = false
   document.addEventListener('keydown', e => {
+    if (e.keyCode === 27) { // "ESC"
+      focusOnSqlPrompt()
+    }
     if (e.keyCode === 17) {
       ctrlDown = true
     }
@@ -261,6 +264,9 @@ const dispatchAction = (action) => {
     case 'delete-last-favorite':
       deleteLastFavorite()
       renderFavorites()
+      break
+    case 'focus-on-prompt':
+      focusOnSqlPrompt()
       break
   }
 }
