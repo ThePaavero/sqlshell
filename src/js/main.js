@@ -1,10 +1,12 @@
 // import EditableCells from './EditableCells'
+import TableAutoCompleter from './TableAutoCompleter'
 
 let form
 let sqlPrompt
 let favorites
 let favoritesWrapper
 let tablesSection
+let tableLinks
 let resultsWrapper
 let resultRenderTypeNavLinks
 let renderStyle = 'table'
@@ -25,7 +27,7 @@ const init = () => {
 
   activateActiveRenderStyleTab()
   listenToSubmitKeyCombination()
-  printTableButtons(window.sqlshellData.tables)
+  tableLinks = printTableButtons(window.sqlshellData.tables)
   listenToSubmitTriggers()
   focusOnSqlPrompt()
   populateFavoritesFromDisk()
@@ -35,6 +37,13 @@ const init = () => {
   listenToLegendLinks()
   attachResultRenderTabs()
   formatResults(renderStyle)
+  TableAutoCompleter(sqlPrompt, getTablesList(), tableLinks)
+}
+
+const getTablesList = () => {
+  return window.sqlshellData.tables.map(obj => {
+    return obj[Object.keys(obj)[0]]
+  })
 }
 
 const listenToSubmitTriggers = () => {
@@ -60,6 +69,7 @@ const activateTable = (tableName) => {
 
 const printTableButtons = (tables) => {
   const wrapper = document.querySelector('.tables')
+  const links = []
   tables.map(row => {
     const myKey = Object.keys(row)[0]
     const tableName = row[myKey]
@@ -72,7 +82,9 @@ const printTableButtons = (tables) => {
       activateTable(tableName)
     })
     wrapper.appendChild(link)
+    links.push(link)
   })
+  return links
 }
 
 const addQueryToFavorites = () => {
@@ -179,7 +191,7 @@ const listenToSubmitKeyCombination = () => {
     if (e.keyCode === 17) {
       ctrlDown = true
     }
-    else if (e.keyCode === 13 && ctrlDown) {
+    else if (e.keyCode === 13 && ctrlDown) { // "Enter"
       form.submit()
     }
     else if (e.keyCode === 83 && ctrlDown) { // "S"

@@ -1,5 +1,7 @@
 @import "reset";
 
+$green: greenyellow;
+
 body {
   font-size: 15px;
   font-family: sans-serif;
@@ -74,7 +76,7 @@ textarea {
   background: #353535;
   border: none;
   border-bottom: solid 1px rgba(255, 255, 255, 0.3);
-  color: greenyellow;
+  color: $green;
   padding: 2vh 2vw;
   font-size: 20px;
 
@@ -106,6 +108,10 @@ input[type=submit] {
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
+  }
+
+  &.autocomplete-candidate {
+    border: solid 1px $green;
   }
 }
 
