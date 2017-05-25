@@ -13,7 +13,7 @@
     <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
       <label>
         Password:
-        <input type='password' name='password' required/>
+        <input type='password' name='password' autofocus required/>
       </label>
       <input type='submit' value='Log in'/>
       <?php if ( ! isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on'): ?>
