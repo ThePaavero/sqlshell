@@ -22,6 +22,7 @@ const init = () => {
   toggleFavoritesFromDisk()
   toggleTablesFromDisk()
   listenToLogOutAndCloseLinks()
+  listenToLegendLinks()
 }
 
 const listenToSubmitTriggers = () => {
@@ -78,6 +79,15 @@ const populateFavoritesFromDisk = () => {
     favorites.push(query)
   })
   renderFavorites()
+}
+
+const toggleFavorites = () => {
+  const open = favoritesWrapper.classList.contains('open')
+  if (open === true) {
+    hideFavorites()
+  } else {
+    showFavorites()
+  }
 }
 
 const toggleFavoritesFromDisk = () => {
@@ -220,6 +230,39 @@ const listenToLogOutAndCloseLinks = () => {
       logOutAndClose()
     })
   })
+}
+
+const listenToLegendLinks = () => {
+  const links = document.querySelectorAll('.prompt-help > small')
+  Array.from(links).forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      const action = link.getAttribute('data-action')
+      dispatchAction(action)
+    })
+  })
+}
+
+const dispatchAction = (action) => {
+  switch (action) {
+    case 'run-query':
+      form.submit()
+      break
+    case 'toggle-tables':
+      toggleTablesSection()
+      break
+    case 'toggle-favorites':
+      toggleFavorites()
+      break
+    case 'save-query-to-favorites':
+      addQueryToFavorites()
+      showFavorites()
+      break
+    case 'delete-last-favorite':
+      deleteLastFavorite()
+      renderFavorites()
+      break
+  }
 }
 
 init()

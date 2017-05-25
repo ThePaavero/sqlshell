@@ -231,6 +231,9 @@ pre {
   color: #fff;
   font-size: 3vw;
   text-decoration: none; }
+
+.prompt-help small {
+  cursor: pointer; }
 </style>
 </head>
 <body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
@@ -255,11 +258,11 @@ pre {
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>
-          <small>CTRL + Enter to run query</small>
-          <small>CTRL + B to toggle list of tables</small>
-          <small>CTRL + S to save query to favorites</small>
-          <small>CTRL + L to toggle list of favorite queries</small>
-          <small>CTRL + D to delete the last favorite</small>
+          <small data-action='run-query'>CTRL + Enter to run query</small>
+          <small data-action='toggle-tables'>CTRL + B to toggle list of tables</small>
+          <small data-action='toggle-favorites'>CTRL + L to toggle list of favorite queries</small>
+          <small data-action='save-query-to-favorites'>CTRL + S to save query to favorites</small>
+          <small data-action='delete-last-favorite'>CTRL + D to delete the last favorite</small>
         </div><!-- prompt-help -->
       </div><!-- in-grid -->
     </section>
@@ -310,6 +313,7 @@ var init = function init() {
   toggleFavoritesFromDisk();
   toggleTablesFromDisk();
   listenToLogOutAndCloseLinks();
+  listenToLegendLinks();
 };
 
 var listenToSubmitTriggers = function listenToSubmitTriggers() {
@@ -366,6 +370,15 @@ var populateFavoritesFromDisk = function populateFavoritesFromDisk() {
     favorites.push(query);
   });
   renderFavorites();
+};
+
+var toggleFavorites = function toggleFavorites() {
+  var open = favoritesWrapper.classList.contains('open');
+  if (open === true) {
+    hideFavorites();
+  } else {
+    showFavorites();
+  }
 };
 
 var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
@@ -505,6 +518,39 @@ var listenToLogOutAndCloseLinks = function listenToLogOutAndCloseLinks() {
       logOutAndClose();
     });
   });
+};
+
+var listenToLegendLinks = function listenToLegendLinks() {
+  var links = document.querySelectorAll('.prompt-help > small');
+  Array.from(links).forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var action = link.getAttribute('data-action');
+      dispatchAction(action);
+    });
+  });
+};
+
+var dispatchAction = function dispatchAction(action) {
+  switch (action) {
+    case 'run-query':
+      form.submit();
+      break;
+    case 'toggle-tables':
+      toggleTablesSection();
+      break;
+    case 'toggle-favorites':
+      toggleFavorites();
+      break;
+    case 'save-query-to-favorites':
+      addQueryToFavorites();
+      showFavorites();
+      break;
+    case 'delete-last-favorite':
+      deleteLastFavorite();
+      renderFavorites();
+      break;
+  }
 };
 
 init();

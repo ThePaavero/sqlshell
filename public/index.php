@@ -29,11 +29,11 @@
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>
-          <small>CTRL + Enter to run query</small>
-          <small>CTRL + B to toggle list of tables</small>
-          <small>CTRL + S to save query to favorites</small>
-          <small>CTRL + L to toggle list of favorite queries</small>
-          <small>CTRL + D to delete the last favorite</small>
+          <small data-action='run-query'>CTRL + Enter to run query</small>
+          <small data-action='toggle-tables'>CTRL + B to toggle list of tables</small>
+          <small data-action='toggle-favorites'>CTRL + L to toggle list of favorite queries</small>
+          <small data-action='save-query-to-favorites'>CTRL + S to save query to favorites</small>
+          <small data-action='delete-last-favorite'>CTRL + D to delete the last favorite</small>
         </div><!-- prompt-help -->
       </div><!-- in-grid -->
     </section>
