@@ -1,5 +1,5 @@
 # SQL Shell
-Single file database tool inspired by phpminiadmin.
+Single file database tool inspired by [phpminiadmin](https://github.com/osalabs/phpminiadmin).
 
 ![Screenshot](https://github.com/ThePaavero/sqlshell/blob/master/screenshot.png)
 
