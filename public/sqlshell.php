@@ -408,8 +408,7 @@ var _TableAutoCompleter2 = _interopRequireDefault(_TableAutoCompleter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var form = void 0; // import EditableCells from './EditableCells'
-
+var form = void 0;
 var sqlPrompt = void 0;
 var favorites = void 0;
 var favoritesWrapper = void 0;
@@ -774,9 +773,6 @@ var formatResults = function formatResults() {
   table.appendChild(tbody);
   resultsWrapper.classList.add('table');
   resultsWrapper.appendChild(table);
-  // if (activeTableName) {
-  //   EditableCells.init(table, sqlPrompt, activeTableName)
-  // }
 };
 
 var getColumnsAsArray = function getColumnsAsArray(data) {
@@ -807,8 +803,7 @@ var setRenderStyle = function setRenderStyle(style) {
 };
 
 var downloadDump = function downloadDump() {
-  var url = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP';
-  window.location = url;
+  window.location.href = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP';
 };
 
 init();
