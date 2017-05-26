@@ -6,7 +6,7 @@ Single file database tool inspired by phpminiadmin.
 ## Features
 * Write SQL queries and run them (CTRL + Enter)
 * Display results as JSON or table
-* Lists available tables (CTRL + B)
+* List available tables (CTRL + B)
 * Save queries as "favorites" and run them again later (CTRL + S)
 * Delete saved favorites (CTRL + D - hold down to rapidly remove all)
 * Autocomplete to closest table name (TAB)
