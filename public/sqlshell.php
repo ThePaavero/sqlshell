@@ -433,9 +433,10 @@ var init = function init() {
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a');
   renderStyle = getRenderStyle();
 
+  tableLinks = printTableButtons(window.sqlshellData.tables);
+
   activateActiveRenderStyleTab();
   listenToSubmitKeyCombination();
-  tableLinks = printTableButtons(window.sqlshellData.tables);
   listenToSubmitTriggers();
   focusOnSqlPrompt();
   populateFavoritesFromDisk();
@@ -444,7 +445,8 @@ var init = function init() {
   listenToLogOutAndCloseLinks();
   listenToLegendLinks();
   attachResultRenderTabs();
-  formatResults(renderStyle);
+  formatResults();
+
   (0, _TableAutoCompleter2.default)(sqlPrompt, getTablesList(), tableLinks);
 };
 
@@ -732,7 +734,7 @@ var activateActiveRenderStyleTab = function activateActiveRenderStyleTab() {
   });
 };
 
-var formatResults = function formatResults(renderStyle) {
+var formatResults = function formatResults() {
   removeResultsTable();
   if (renderStyle !== 'table') {
     resultsWrapper.classList.remove('table');

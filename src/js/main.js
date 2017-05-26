@@ -25,9 +25,10 @@ const init = () => {
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a')
   renderStyle = getRenderStyle()
 
+  tableLinks = printTableButtons(window.sqlshellData.tables)
+
   activateActiveRenderStyleTab()
   listenToSubmitKeyCombination()
-  tableLinks = printTableButtons(window.sqlshellData.tables)
   listenToSubmitTriggers()
   focusOnSqlPrompt()
   populateFavoritesFromDisk()
@@ -36,7 +37,8 @@ const init = () => {
   listenToLogOutAndCloseLinks()
   listenToLegendLinks()
   attachResultRenderTabs()
-  formatResults(renderStyle)
+  formatResults()
+
   TableAutoCompleter(sqlPrompt, getTablesList(), tableLinks)
 }
 
@@ -325,7 +327,7 @@ const activateActiveRenderStyleTab = () => {
   })
 }
 
-const formatResults = (renderStyle) => {
+const formatResults = () => {
   removeResultsTable()
   if (renderStyle !== 'table') {
     resultsWrapper.classList.remove('table')
