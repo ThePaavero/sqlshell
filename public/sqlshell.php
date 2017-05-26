@@ -21,6 +21,18 @@ if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
   $_SESSION['sqlshellLoggedIn'] = true;
 }
 
+function exportDump()
+{
+  global $user, $pass, $db;
+  $filename = 'backup-' . date('d-m-Y') . '.sql.gz';
+  $mime = 'application/x-gzip';
+  header('Content-Type: ' . $mime);
+  header('Content-Disposition: attachment; filename="' . $filename . '"');
+  $cmd = "mysqldump -u $user --password=$pass $db | gzip --best";
+  passthru($cmd);
+  exit(0);
+}
+
 function tablesBarShouldBeOpen()
 {
   $sessionKey = 'tablesBarShouldBeOpen';
@@ -51,6 +63,9 @@ if (isset($_GET['ajax']))
       break;
     case 'LOG_OUT':
       session_destroy();
+      break;
+    case 'CREATE_DUMP':
+      exportDump();
       break;
   }
 
@@ -279,6 +294,7 @@ pre, table.results-table {
           <small data-action='toggle-favorites'>CTRL + L to toggle list of favorite queries</small>
           <small data-action='save-query-to-favorites'>CTRL + S to save query to favorites</small>
           <small data-action='delete-last-favorite'>CTRL + D to delete the last favorite</small>
+          <small data-action='download-dump'>CTRL + E to download a dump</small>
           <small data-action='focus-on-prompt'>ESC to focus on prompt</small>
         </div><!-- prompt-help -->
       </div><!-- in-grid -->
@@ -593,6 +609,10 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
       e.preventDefault();
       addQueryToFavorites();
       showFavorites();
+    } else if (e.keyCode === 69 && ctrlDown) {
+      // "E"
+      e.preventDefault();
+      downloadDump();
     } else if (e.keyCode === 66 && ctrlDown) {
       // "B"
       e.preventDefault();
@@ -692,6 +712,9 @@ var dispatchAction = function dispatchAction(action) {
     case 'focus-on-prompt':
       focusOnSqlPrompt();
       break;
+    case 'download-dump':
+      downloadDump();
+      break;
   }
 };
 
@@ -781,6 +804,11 @@ var setRenderStyle = function setRenderStyle(style) {
   window.localStorage.setItem('render-style', style);
   formatResults(style);
   activateActiveRenderStyleTab();
+};
+
+var downloadDump = function downloadDump() {
+  var url = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP';
+  window.location = url;
 };
 
 init();

@@ -10,6 +10,7 @@ Single file database tool inspired by phpminiadmin.
 * Save queries as "favorites" and run them again later (CTRL + S)
 * Delete saved favorites (CTRL + D - hold down to rapidly remove all)
 * Autocomplete to closest table name (TAB)
+* Export database and download as a dump (CTRL + E) --depends on `mysqldump` being installed
 
 ## Installation
 * Download the [bundle file](https://raw.githubusercontent.com/ThePaavero/sqlshell/master/public/sqlshell.php)

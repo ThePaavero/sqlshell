@@ -199,6 +199,10 @@ const listenToSubmitKeyCombination = () => {
       addQueryToFavorites()
       showFavorites()
     }
+    else if (e.keyCode === 69 && ctrlDown) { // "E"
+      e.preventDefault()
+      downloadDump()
+    }
     else if (e.keyCode === 66 && ctrlDown) { // "B"
       e.preventDefault()
       toggleTablesSection()
@@ -299,6 +303,9 @@ const dispatchAction = (action) => {
     case 'focus-on-prompt':
       focusOnSqlPrompt()
       break
+    case 'download-dump':
+      downloadDump()
+      break
   }
 }
 
@@ -388,6 +395,11 @@ const setRenderStyle = (style) => {
   window.localStorage.setItem('render-style', style)
   formatResults(style)
   activateActiveRenderStyleTab()
+}
+
+const downloadDump = () => {
+  const url = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP'
+  window.location = url
 }
 
 init()

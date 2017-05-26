@@ -17,6 +17,18 @@ if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
   $_SESSION['sqlshellLoggedIn'] = true;
 }
 
+function exportDump()
+{
+  global $user, $pass, $db;
+  $filename = 'backup-' . date('d-m-Y') . '.sql.gz';
+  $mime = 'application/x-gzip';
+  header('Content-Type: ' . $mime);
+  header('Content-Disposition: attachment; filename="' . $filename . '"');
+  $cmd = "mysqldump -u $user --password=$pass $db | gzip --best";
+  passthru($cmd);
+  exit(0);
+}
+
 function tablesBarShouldBeOpen()
 {
   $sessionKey = 'tablesBarShouldBeOpen';
@@ -47,6 +59,9 @@ if (isset($_GET['ajax']))
       break;
     case 'LOG_OUT':
       session_destroy();
+      break;
+    case 'CREATE_DUMP':
+      exportDump();
       break;
   }
 

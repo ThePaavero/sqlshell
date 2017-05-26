@@ -34,6 +34,7 @@
           <small data-action='toggle-favorites'>CTRL + L to toggle list of favorite queries</small>
           <small data-action='save-query-to-favorites'>CTRL + S to save query to favorites</small>
           <small data-action='delete-last-favorite'>CTRL + D to delete the last favorite</small>
+          <small data-action='download-dump'>CTRL + E to download a dump</small>
           <small data-action='focus-on-prompt'>ESC to focus on prompt</small>
         </div><!-- prompt-help -->
       </div><!-- in-grid -->
