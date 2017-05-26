@@ -1,4 +1,3 @@
-// import EditableCells from './EditableCells'
 import TableAutoCompleter from './TableAutoCompleter'
 
 let form
@@ -367,9 +366,6 @@ const formatResults = () => {
   table.appendChild(tbody)
   resultsWrapper.classList.add('table')
   resultsWrapper.appendChild(table)
-  // if (activeTableName) {
-  //   EditableCells.init(table, sqlPrompt, activeTableName)
-  // }
 }
 
 const getColumnsAsArray = (data) => {
@@ -400,8 +396,7 @@ const setRenderStyle = (style) => {
 }
 
 const downloadDump = () => {
-  const url = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP'
-  window.location = url
+  window.location.href = window.sqlshellData.baseUrl + '?ajax=1&action=CREATE_DUMP'
 }
 
 init()
