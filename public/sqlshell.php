@@ -43,9 +43,7 @@ function tablesBarShouldBeOpen()
 function getTables($pdo)
 {
   $sql = 'show tables';
-  $query = $pdo->query($sql);
-
-  return $query->fetchAll();
+  return $pdo->query($sql)->fetchAll();
 }
 
 function getFirstTable($pdo, $db)
@@ -84,7 +82,7 @@ $firstTable = getFirstTable($pdo, $db);
 
 $jsonData = json_encode([
   'baseUrl' => $baseUrl,
-  'tables' => getTables($pdo, $db)
+  'tables' => getTables($pdo)
 ]);
 
 if (isset($_POST['sql']) && ! empty($_POST['sql']))
