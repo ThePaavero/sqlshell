@@ -13,7 +13,7 @@ Single file database tool inspired by [phpminiadmin](https://github.com/osalabs/
 * List available tables (CTRL + B)
 * Save queries as "favorites" and run them again later (CTRL + S)
 * Delete saved favorites (CTRL + D - hold down to rapidly remove all)
-* Autocomplete to closest table name (TAB)
+* Autocomplete to closest common SQL command or table name (TAB)
 * Export database and download as a dump (CTRL + E) --depends on `mysqldump` being installed
 
 ## Installation
