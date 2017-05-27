@@ -3,6 +3,8 @@ Single file database tool inspired by [phpminiadmin](https://github.com/osalabs/
 
 ![Screenshot](https://github.com/ThePaavero/sqlshell/blob/master/screenshot.png)
 
+![Autocomplete](https://github.com/ThePaavero/sqlshell/blob/master/sqlshell-autocomplete-refactored.gif)
+
 ## Features
 * Write SQL queries and run them (CTRL + Enter)
 * Display results as JSON or table
