@@ -331,7 +331,7 @@ pre, table.results-table {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var TableAutoCompleter = function TableAutoCompleter(prompt, tableNames, links) {
+var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
 
   var offerActive = false;
 
@@ -397,14 +397,14 @@ var TableAutoCompleter = function TableAutoCompleter(prompt, tableNames, links) 
   init();
 };
 
-exports.default = TableAutoCompleter;
+exports.default = AutoCompleter;
 
 },{}],2:[function(require,module,exports){
 'use strict';
 
-var _TableAutoCompleter = require('./TableAutoCompleter');
+var _AutoCompleter = require('./AutoCompleter');
 
-var _TableAutoCompleter2 = _interopRequireDefault(_TableAutoCompleter);
+var _AutoCompleter2 = _interopRequireDefault(_AutoCompleter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -446,7 +446,7 @@ var init = function init() {
   attachResultRenderTabs();
   formatResults();
 
-  (0, _TableAutoCompleter2.default)(sqlPrompt, getTablesList(), tableLinks);
+  (0, _AutoCompleter2.default)(sqlPrompt, getTablesList(), tableLinks);
 };
 
 var getTablesList = function getTablesList() {
@@ -808,7 +808,7 @@ var downloadDump = function downloadDump() {
 
 init();
 
-},{"./TableAutoCompleter":1}]},{},[2]);
+},{"./AutoCompleter":1}]},{},[2]);
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const TableAutoCompleter = (prompt, tableNames, links) => {
+const AutoCompleter = (prompt, tableNames, links) => {
 
   let offerActive = false
 
@@ -63,4 +63,4 @@ const TableAutoCompleter = (prompt, tableNames, links) => {
   init()
 }
 
-export default TableAutoCompleter
+export default AutoCompleter

@@ -1,4 +1,4 @@
-import TableAutoCompleter from './TableAutoCompleter'
+import AutoCompleter from './AutoCompleter'
 
 let form
 let sqlPrompt
@@ -38,7 +38,7 @@ const init = () => {
   attachResultRenderTabs()
   formatResults()
 
-  TableAutoCompleter(sqlPrompt, getTablesList(), tableLinks)
+  AutoCompleter(sqlPrompt, getTablesList(), tableLinks)
 }
 
 const getTablesList = () => {
