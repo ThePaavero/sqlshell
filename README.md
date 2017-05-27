@@ -1,8 +1,7 @@
 # SQL Shell
 Single file database tool inspired by [phpminiadmin](https://github.com/osalabs/phpminiadmin).
 
-###TL;DR
-Download, edit and upload [this file](https://raw.githubusercontent.com/ThePaavero/sqlshell/master/public/sqlshell.php).
+*TL;DR*: Download, edit and upload [this file](https://raw.githubusercontent.com/ThePaavero/sqlshell/master/public/sqlshell.php).
 
 ![Screenshot](https://github.com/ThePaavero/sqlshell/blob/master/screenshot.png)
 
