@@ -26,6 +26,8 @@
       <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
         <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
         <input type='submit' value='Execute'/>
+        <div class='autocomplete-offer-preview'>
+        </div><!-- autocomplete-offer-preview -->
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>

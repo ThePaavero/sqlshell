@@ -122,6 +122,9 @@ small {
 .login-form {
   padding: 2vh 5vw; }
 
+.sql-form {
+  position: relative; }
+
 .warning {
   display: block;
   color: #ff4626;
@@ -162,7 +165,7 @@ textarea {
   background: #353535;
   border: none;
   border-bottom: solid 1px rgba(255, 255, 255, 0.3);
-  color: greenyellow;
+  color: #adff2f;
   padding: 2vh 2vw;
   font-size: 20px; }
   textarea:active, textarea:focus {
@@ -187,7 +190,7 @@ input[type=submit] {
   .table-button:hover {
     background: rgba(255, 255, 255, 0.1); }
   .table-button.autocomplete-candidate {
-    border: solid 1px greenyellow; }
+    border: solid 1px #adff2f; }
 
 .results-wrapper {
   max-width: 100%;
@@ -263,6 +266,18 @@ pre, table.results-table {
 
 .prompt-help small {
   cursor: pointer; }
+
+.autocomplete-offer-preview {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  background: rgba(173, 255, 47, 0.1);
+  font-size: 11px;
+  color: #fff; }
+  .autocomplete-offer-preview.show {
+    display: block; }
 </style>
 </head>
 <body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
@@ -284,6 +299,8 @@ pre, table.results-table {
       <form method='post' action='<?php echo $baseUrl ?>' class='sql-form'>
         <textarea name='sql' spellcheck='false' wrap='off' autofocus required><?php echo $sql ?></textarea>
         <input type='submit' value='Execute'/>
+        <div class='autocomplete-offer-preview'>
+        </div><!-- autocomplete-offer-preview -->
       </form> <!-- sql-form -->
       <div class='in-grid'>
         <div class='prompt-help'>
@@ -333,21 +350,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
 
-  var offerActive = false;
+  var activeOffer = false;
+  var offerPreviewElement = void 0;
 
   var commandsToOffer = ['select', 'update', 'insert', 'count', 'from', 'order', 'group by', 'left join', 'right join', 'inner join', 'outer join', 'distinct', 'create table', 'delete', 'where', 'alter table', 'add column', 'limit'];
 
   var init = function init() {
+    offerPreviewElement = document.querySelector('.autocomplete-offer-preview');
     listenToPrompt();
     listenToTab();
   };
 
   var listenToTab = function listenToTab() {
     document.addEventListener('keydown', function (e) {
-      if (e.keyCode === 9 && offerActive) {
+      if (e.keyCode === 9 && activeOffer) {
         // "Tab"
         e.preventDefault();
-        injectOffer(offerActive);
+        injectOffer(activeOffer);
       }
     });
   };
@@ -367,7 +386,7 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
       var lastWord = getLastWord(prompt.value);
 
       if (lastWord.length < 2) {
-        offerActive = false;
+        activeOffer = false;
         render();
         return;
       }
@@ -377,7 +396,7 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
       // Commands come before tables names.
       commandsToOffer.forEach(function (command) {
         if (command.startsWith(lastWord)) {
-          offerActive = command;
+          activeOffer = command;
           render();
           commandHit = true;
         }
@@ -395,10 +414,10 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
       });
 
       if (matches.length < 1) {
-        offerActive = false;
+        activeOffer = false;
         return;
       } else {
-        offerActive = matches[0];
+        activeOffer = matches[0];
       }
 
       render();
@@ -411,12 +430,15 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
   };
 
   var renderActiveOffer = function renderActiveOffer() {
-    // @todo
+    var offerString = activeOffer || '';
+    offerPreviewElement.innerHTML = offerString;
+    var cssClassMethod = offerString ? 'add' : 'remove';
+    offerPreviewElement.classList[cssClassMethod]('show');
   };
 
   var renderTableButtons = function renderTableButtons() {
     links.forEach(function (link) {
-      var method = link.getAttribute('href').split('#')[1] === offerActive ? 'add' : 'remove';
+      var method = link.getAttribute('href').split('#')[1] === activeOffer ? 'add' : 'remove';
       link.classList[method]('autocomplete-candidate');
     });
   };

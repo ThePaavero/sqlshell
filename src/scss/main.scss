@@ -1,6 +1,6 @@
 @import "reset";
 
-$green: greenyellow;
+$green: #adff2f;
 
 body {
   font-size: 15px;
@@ -19,6 +19,10 @@ small {
 
 .login-form {
   padding: 2vh 5vw;
+}
+
+.sql-form {
+  position: relative;
 }
 
 .warning {
@@ -230,5 +234,20 @@ pre, table.results-table {
 
   small {
     cursor: pointer;
+  }
+}
+
+.autocomplete-offer-preview {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  background: rgba(173, 255, 47, 0.1);
+  font-size: 11px;
+  color: #fff;
+
+  &.show {
+    display: block;
   }
 }

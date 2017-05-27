@@ -1,6 +1,7 @@
 const AutoCompleter = (prompt, tableNames, links) => {
 
-  let offerActive = false
+  let activeOffer = false
+  let offerPreviewElement
 
   const commandsToOffer = [
     'select',
@@ -24,15 +25,16 @@ const AutoCompleter = (prompt, tableNames, links) => {
   ]
 
   const init = () => {
+    offerPreviewElement = document.querySelector('.autocomplete-offer-preview')
     listenToPrompt()
     listenToTab()
   }
 
   const listenToTab = () => {
     document.addEventListener('keydown', e => {
-      if (e.keyCode === 9 && offerActive) { // "Tab"
+      if (e.keyCode === 9 && activeOffer) { // "Tab"
         e.preventDefault()
-        injectOffer(offerActive)
+        injectOffer(activeOffer)
       }
     })
   }
@@ -52,7 +54,7 @@ const AutoCompleter = (prompt, tableNames, links) => {
       const lastWord = getLastWord(prompt.value)
 
       if (lastWord.length < 2) {
-        offerActive = false
+        activeOffer = false
         render()
         return
       }
@@ -62,7 +64,7 @@ const AutoCompleter = (prompt, tableNames, links) => {
       // Commands come before tables names.
       commandsToOffer.forEach(command => {
         if (command.startsWith(lastWord)) {
-          offerActive = command
+          activeOffer = command
           render()
           commandHit = true
         }
@@ -80,10 +82,10 @@ const AutoCompleter = (prompt, tableNames, links) => {
       })
 
       if (matches.length < 1) {
-        offerActive = false
+        activeOffer = false
         return
       } else {
-        offerActive = matches[0]
+        activeOffer = matches[0]
       }
 
       render()
@@ -96,12 +98,15 @@ const AutoCompleter = (prompt, tableNames, links) => {
   }
 
   const renderActiveOffer = () => {
-    // @todo
+    const offerString = activeOffer || ''
+    offerPreviewElement.innerHTML = offerString
+    const cssClassMethod = offerString ? 'add' : 'remove'
+    offerPreviewElement.classList[cssClassMethod]('show')
   }
 
   const renderTableButtons = () => {
     links.forEach(link => {
-      const method = link.getAttribute('href').split('#')[1] === offerActive ? 'add' : 'remove'
+      const method = link.getAttribute('href').split('#')[1] === activeOffer ? 'add' : 'remove'
       link.classList[method]('autocomplete-candidate')
     })
   }
