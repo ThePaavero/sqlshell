@@ -335,12 +335,14 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
 
   var offerActive = false;
 
+  var commandsToOffer = ['select', 'update', 'insert', 'count', 'from', 'order', 'group by', 'left join', 'right join', 'inner join', 'outer join', 'distinct', 'create table', 'delete', 'where', 'alter table', 'add column', 'limit'];
+
   var init = function init() {
     listenToPrompt();
-    listenToEnter();
+    listenToTab();
   };
 
-  var listenToEnter = function listenToEnter() {
+  var listenToTab = function listenToTab() {
     document.addEventListener('keydown', function (e) {
       if (e.keyCode === 9 && offerActive) {
         // "Tab"
@@ -366,10 +368,26 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
 
       if (lastWord.length < 2) {
         offerActive = false;
-        renderTableButtons();
+        render();
         return;
       }
 
+      var commandHit = false;
+
+      // Commands come before tables names.
+      commandsToOffer.forEach(function (command) {
+        if (command.startsWith(lastWord)) {
+          offerActive = command;
+          render();
+          commandHit = true;
+        }
+      });
+      if (commandHit) {
+        // No point in continuing.
+        return;
+      }
+
+      // Ok, no command was matched, move on to tables.
       var matches = tableNames.filter(function (tableName) {
         if (tableName.startsWith(lastWord)) {
           return true;
@@ -383,8 +401,17 @@ var AutoCompleter = function AutoCompleter(prompt, tableNames, links) {
         offerActive = matches[0];
       }
 
-      renderTableButtons();
+      render();
     });
+  };
+
+  var render = function render() {
+    renderTableButtons();
+    renderActiveOffer();
+  };
+
+  var renderActiveOffer = function renderActiveOffer() {
+    // @todo
   };
 
   var renderTableButtons = function renderTableButtons() {
