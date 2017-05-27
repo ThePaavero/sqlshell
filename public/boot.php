@@ -32,6 +32,7 @@ function exportDump()
 function getTables($pdo)
 {
   $sql = 'show tables';
+
   return $pdo->query($sql)->fetchAll();
 }
 
@@ -75,8 +76,11 @@ if (isset($_POST['sql']) && ! empty($_POST['sql']))
   $sql = trim($_POST['sql']);
   $pdoStatement = $pdo->query($sql);
   $results = $pdoStatement->fetchAll();
+  if (isset($_POST['xhr']))
+  {
+    die(json_encode($results));
+  }
   $results = '<pre>' . json_encode($results, JSON_PRETTY_PRINT) . '</pre>';
 }
 
 $sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
-

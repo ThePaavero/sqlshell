@@ -36,6 +36,7 @@ function exportDump()
 function getTables($pdo)
 {
   $sql = 'show tables';
+
   return $pdo->query($sql)->fetchAll();
 }
 
@@ -79,11 +80,14 @@ if (isset($_POST['sql']) && ! empty($_POST['sql']))
   $sql = trim($_POST['sql']);
   $pdoStatement = $pdo->query($sql);
   $results = $pdoStatement->fetchAll();
+  if (isset($_POST['xhr']))
+  {
+    die(json_encode($results));
+  }
   $results = '<pre>' . json_encode($results, JSON_PRETTY_PRINT) . '</pre>';
 }
 
 $sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
-
  ?>
 <!doctype html>
 <html>
@@ -441,15 +445,128 @@ exports.default = AutoCompleter;
 },{}],2:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var Favorites = function Favorites(favorites, sqlPrompt, favoritesWrapper) {
+
+  var addQueryToFavorites = function addQueryToFavorites() {
+    var currentQuery = sqlPrompt.value;
+    favorites.push(currentQuery);
+    saveFavoritesToDisk();
+    renderFavorites();
+  };
+
+  var populateFavoritesFromDisk = function populateFavoritesFromDisk() {
+    var fromDisk = window.localStorage.getItem('favorites');
+    if (!fromDisk) {
+      return;
+    }
+    var diskFavorites = JSON.parse(fromDisk);
+    diskFavorites.forEach(function (query) {
+      favorites.push(query);
+    });
+    renderFavorites();
+  };
+
+  var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
+    var open = window.localStorage.getItem('favorites-open') || false;
+    open = open === 'true';
+    if (open === true) {
+      showFavorites();
+    } else {
+      hideFavorites();
+    }
+  };
+
+  var toggleFavorites = function toggleFavorites() {
+    if (favorites.length < 1) {
+      return;
+    }
+    var open = favoritesWrapper.classList.contains('open');
+    if (open === true) {
+      hideFavorites();
+    } else {
+      showFavorites();
+    }
+  };
+
+  var renderFavorites = function renderFavorites() {
+    favorites = favorites.reverse();
+    if (favorites.length < 1) {
+      hideFavorites();
+      return;
+    }
+    favoritesWrapper.innerHTML = '<h3>Favorites</h3>';
+    var orderedList = document.createElement('ol');
+    favorites.map(function (query) {
+      var link = document.createElement('li');
+      link.setAttribute('data-query', query);
+      link.innerText = query;
+      orderedList.appendChild(link);
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        sqlPrompt.value = link.getAttribute('data-query');
+        sqlPrompt.focus();
+      });
+    });
+    favoritesWrapper.appendChild(orderedList);
+    favorites = favorites.reverse();
+  };
+
+  var showFavorites = function showFavorites() {
+    if (favorites.length < 1) {
+      return;
+    }
+    window.localStorage.setItem('favorites-open', true);
+    favoritesWrapper.classList.add('open');
+  };
+  var hideFavorites = function hideFavorites() {
+    window.localStorage.setItem('favorites-open', false);
+    favoritesWrapper.classList.remove('open');
+  };
+
+  var deleteLastFavorite = function deleteLastFavorite() {
+    favorites.shift();
+    saveFavoritesToDisk();
+  };
+
+  var saveFavoritesToDisk = function saveFavoritesToDisk() {
+    window.localStorage.setItem('favorites', JSON.stringify(favorites));
+  };
+
+  return {
+    addQueryToFavorites: addQueryToFavorites,
+    populateFavoritesFromDisk: populateFavoritesFromDisk,
+    toggleFavorites: toggleFavorites,
+    showFavorites: showFavorites,
+    hideFavorites: hideFavorites,
+    deleteLastFavorite: deleteLastFavorite,
+    saveFavoritesToDisk: saveFavoritesToDisk,
+    toggleFavoritesFromDisk: toggleFavoritesFromDisk,
+    renderFavorites: renderFavorites
+  };
+};
+
+exports.default = Favorites;
+
+},{}],3:[function(require,module,exports){
+'use strict';
+
 var _AutoCompleter = require('./AutoCompleter');
 
 var _AutoCompleter2 = _interopRequireDefault(_AutoCompleter);
+
+var _Favorites = require('./Favorites');
+
+var _Favorites2 = _interopRequireDefault(_Favorites);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var form = void 0;
 var sqlPrompt = void 0;
 var favorites = void 0;
+var favoritesArray = void 0;
 var favoritesWrapper = void 0;
 var tablesSection = void 0;
 var tableLinks = void 0;
@@ -462,23 +579,25 @@ var init = function init() {
   if (document.body.classList.contains('logged-out')) {
     return;
   }
+
   resultsWrapper = document.querySelector('.results-wrapper');
   form = document.querySelector('.sql-form');
   sqlPrompt = form.querySelector('textarea');
-  favorites = [];
+  favoritesArray = [];
   favoritesWrapper = document.querySelector('.favorites-wrapper');
   tablesSection = document.querySelector('.tables-section');
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a');
   renderStyle = getRenderStyle();
 
+  favorites = (0, _Favorites2.default)(favoritesArray, sqlPrompt, favoritesWrapper);
   tableLinks = printTableButtons(window.sqlshellData.tables);
 
   activateActiveRenderStyleTab();
   listenToSubmitKeyCombination();
   listenToSubmitTriggers();
   focusOnSqlPrompt();
-  populateFavoritesFromDisk();
-  toggleFavoritesFromDisk();
+  favorites.populateFavoritesFromDisk();
+  favorites.toggleFavoritesFromDisk();
   toggleTablesFromDisk();
   listenToLogOutAndCloseLinks();
   listenToLegendLinks();
@@ -535,47 +654,6 @@ var printTableButtons = function printTableButtons(tables) {
   return links;
 };
 
-var addQueryToFavorites = function addQueryToFavorites() {
-  var currentQuery = sqlPrompt.value;
-  favorites.push(currentQuery);
-  saveFavoritesToDisk();
-  renderFavorites();
-};
-
-var populateFavoritesFromDisk = function populateFavoritesFromDisk() {
-  var fromDisk = window.localStorage.getItem('favorites');
-  if (!fromDisk) {
-    return;
-  }
-  var diskFavorites = JSON.parse(fromDisk);
-  diskFavorites.forEach(function (query) {
-    favorites.push(query);
-  });
-  renderFavorites();
-};
-
-var toggleFavorites = function toggleFavorites() {
-  if (favorites.length < 1) {
-    return;
-  }
-  var open = favoritesWrapper.classList.contains('open');
-  if (open === true) {
-    hideFavorites();
-  } else {
-    showFavorites();
-  }
-};
-
-var toggleFavoritesFromDisk = function toggleFavoritesFromDisk() {
-  var open = window.localStorage.getItem('favorites-open') || false;
-  open = open === 'true';
-  if (open === true) {
-    showFavorites();
-  } else {
-    hideFavorites();
-  }
-};
-
 var toggleTablesFromDisk = function toggleTablesFromDisk() {
   var open = window.localStorage.getItem('tables-open') || 'true';
   open = open === 'true';
@@ -584,50 +662,6 @@ var toggleTablesFromDisk = function toggleTablesFromDisk() {
   } else {
     hideTablesSection();
   }
-};
-
-var renderFavorites = function renderFavorites() {
-  favorites = favorites.reverse();
-  if (favorites.length < 1) {
-    hideFavorites();
-    return;
-  }
-  favoritesWrapper.innerHTML = '<h3>Favorites</h3>';
-  var orderedList = document.createElement('ol');
-  favorites.map(function (query) {
-    var link = document.createElement('li');
-    link.setAttribute('data-query', query);
-    link.innerText = query;
-    orderedList.appendChild(link);
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      sqlPrompt.value = link.getAttribute('data-query');
-      focusOnSqlPrompt();
-    });
-  });
-  favoritesWrapper.appendChild(orderedList);
-  favorites = favorites.reverse();
-};
-
-var showFavorites = function showFavorites() {
-  if (favorites.length < 1) {
-    return;
-  }
-  window.localStorage.setItem('favorites-open', true);
-  favoritesWrapper.classList.add('open');
-};
-var hideFavorites = function hideFavorites() {
-  window.localStorage.setItem('favorites-open', false);
-  favoritesWrapper.classList.remove('open');
-};
-
-var deleteLastFavorite = function deleteLastFavorite() {
-  favorites.shift();
-  saveFavoritesToDisk();
-};
-
-var saveFavoritesToDisk = function saveFavoritesToDisk() {
-  window.localStorage.setItem('favorites', JSON.stringify(favorites));
 };
 
 var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
@@ -645,8 +679,8 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
     } else if (e.keyCode === 83 && ctrlDown) {
       // "S"
       e.preventDefault();
-      addQueryToFavorites();
-      showFavorites();
+      favorites.addQueryToFavorites();
+      favorites.showFavorites();
     } else if (e.keyCode === 69 && ctrlDown) {
       // "E"
       e.preventDefault();
@@ -661,13 +695,13 @@ var listenToSubmitKeyCombination = function listenToSubmitKeyCombination() {
       if (favoritesWrapper.classList.contains('open')) {
         hideFavorites();
       } else {
-        showFavorites();
+        favorites.showFavorites();
       }
     } else if (e.keyCode === 68 && ctrlDown) {
       // "D"
       e.preventDefault();
-      deleteLastFavorite();
-      renderFavorites();
+      favorites.deleteLastFavorite();
+      favorites.renderFavorites();
     }
   });
   document.addEventListener('keyup', function (e) {
@@ -741,7 +775,7 @@ var dispatchAction = function dispatchAction(action) {
       break;
     case 'save-query-to-favorites':
       addQueryToFavorites();
-      showFavorites();
+      favorites.showFavorites();
       break;
     case 'delete-last-favorite':
       deleteLastFavorite();
@@ -847,7 +881,7 @@ var downloadDump = function downloadDump() {
 
 init();
 
-},{"./AutoCompleter":1}]},{},[2]);
+},{"./AutoCompleter":1,"./Favorites":2}]},{},[3]);
 </script>
 </body>
 </html>

@@ -1,8 +1,10 @@
 import AutoCompleter from './AutoCompleter'
+import Favorites from './Favorites'
 
 let form
 let sqlPrompt
 let favorites
+let favoritesArray
 let favoritesWrapper
 let tablesSection
 let tableLinks
@@ -15,23 +17,25 @@ const init = () => {
   if (document.body.classList.contains('logged-out')) {
     return
   }
+
   resultsWrapper = document.querySelector('.results-wrapper')
   form = document.querySelector('.sql-form')
   sqlPrompt = form.querySelector('textarea')
-  favorites = []
+  favoritesArray = []
   favoritesWrapper = document.querySelector('.favorites-wrapper')
   tablesSection = document.querySelector('.tables-section')
   resultRenderTypeNavLinks = document.querySelectorAll('.results-wrapper nav ul li a')
   renderStyle = getRenderStyle()
 
+  favorites = Favorites(favoritesArray, sqlPrompt, favoritesWrapper)
   tableLinks = printTableButtons(window.sqlshellData.tables)
 
   activateActiveRenderStyleTab()
   listenToSubmitKeyCombination()
   listenToSubmitTriggers()
   focusOnSqlPrompt()
-  populateFavoritesFromDisk()
-  toggleFavoritesFromDisk()
+  favorites.populateFavoritesFromDisk()
+  favorites.toggleFavoritesFromDisk()
   toggleTablesFromDisk()
   listenToLogOutAndCloseLinks()
   listenToLegendLinks()
@@ -88,47 +92,6 @@ const printTableButtons = (tables) => {
   return links
 }
 
-const addQueryToFavorites = () => {
-  const currentQuery = sqlPrompt.value
-  favorites.push(currentQuery)
-  saveFavoritesToDisk()
-  renderFavorites()
-}
-
-const populateFavoritesFromDisk = () => {
-  const fromDisk = window.localStorage.getItem('favorites')
-  if (!fromDisk) {
-    return
-  }
-  const diskFavorites = JSON.parse(fromDisk)
-  diskFavorites.forEach(query => {
-    favorites.push(query)
-  })
-  renderFavorites()
-}
-
-const toggleFavorites = () => {
-  if (favorites.length < 1) {
-    return
-  }
-  const open = favoritesWrapper.classList.contains('open')
-  if (open === true) {
-    hideFavorites()
-  } else {
-    showFavorites()
-  }
-}
-
-const toggleFavoritesFromDisk = () => {
-  let open = window.localStorage.getItem('favorites-open') || false
-  open = open === 'true'
-  if (open === true) {
-    showFavorites()
-  } else {
-    hideFavorites()
-  }
-}
-
 const toggleTablesFromDisk = () => {
   let open = window.localStorage.getItem('tables-open') || 'true'
   open = open === 'true'
@@ -137,50 +100,6 @@ const toggleTablesFromDisk = () => {
   } else {
     hideTablesSection()
   }
-}
-
-const renderFavorites = () => {
-  favorites = favorites.reverse()
-  if (favorites.length < 1) {
-    hideFavorites()
-    return
-  }
-  favoritesWrapper.innerHTML = '<h3>Favorites</h3>'
-  const orderedList = document.createElement('ol')
-  favorites.map(query => {
-    const link = document.createElement('li')
-    link.setAttribute('data-query', query)
-    link.innerText = query
-    orderedList.appendChild(link)
-    link.addEventListener('click', e => {
-      e.preventDefault()
-      sqlPrompt.value = link.getAttribute('data-query')
-      focusOnSqlPrompt()
-    })
-  })
-  favoritesWrapper.appendChild(orderedList)
-  favorites = favorites.reverse()
-}
-
-const showFavorites = () => {
-  if (favorites.length < 1) {
-    return
-  }
-  window.localStorage.setItem('favorites-open', true)
-  favoritesWrapper.classList.add('open')
-}
-const hideFavorites = () => {
-  window.localStorage.setItem('favorites-open', false)
-  favoritesWrapper.classList.remove('open')
-}
-
-const deleteLastFavorite = () => {
-  favorites.shift()
-  saveFavoritesToDisk()
-}
-
-const saveFavoritesToDisk = () => {
-  window.localStorage.setItem('favorites', JSON.stringify(favorites))
 }
 
 const listenToSubmitKeyCombination = () => {
@@ -197,8 +116,8 @@ const listenToSubmitKeyCombination = () => {
     }
     else if (e.keyCode === 83 && ctrlDown) { // "S"
       e.preventDefault()
-      addQueryToFavorites()
-      showFavorites()
+      favorites.addQueryToFavorites()
+      favorites.showFavorites()
     }
     else if (e.keyCode === 69 && ctrlDown) { // "E"
       e.preventDefault()
@@ -213,13 +132,13 @@ const listenToSubmitKeyCombination = () => {
       if (favoritesWrapper.classList.contains('open')) {
         hideFavorites()
       } else {
-        showFavorites()
+        favorites.showFavorites()
       }
     }
     else if (e.keyCode === 68 && ctrlDown) { // "D"
       e.preventDefault()
-      deleteLastFavorite()
-      renderFavorites()
+      favorites.deleteLastFavorite()
+      favorites.renderFavorites()
     }
   })
   document.addEventListener('keyup', e => {
@@ -295,7 +214,7 @@ const dispatchAction = (action) => {
       break
     case 'save-query-to-favorites':
       addQueryToFavorites()
-      showFavorites()
+      favorites.showFavorites()
       break
     case 'delete-last-favorite':
       deleteLastFavorite()
