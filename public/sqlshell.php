@@ -33,13 +33,6 @@ function exportDump()
   exit(0);
 }
 
-function tablesBarShouldBeOpen()
-{
-  $sessionKey = 'tablesBarShouldBeOpen';
-
-  return isset($_SESSION[$sessionKey]) && $_SESSION[$sessionKey] === true;
-}
-
 function getTables($pdo)
 {
   $sql = 'show tables';
@@ -55,10 +48,6 @@ if (isset($_GET['ajax']))
 {
   switch ($_GET['action'])
   {
-    case 'SET_TABLES_BAR_OPEN_STATUS':
-      $_SESSION['tablesBarShouldBeOpen'] = $_GET['status'] === 'open';
-      echo json_encode(['success' => true, 'valueSet' => $_SESSION['tablesBarShouldBeOpen']]);
-      break;
     case 'LOG_OUT':
       session_destroy();
       break;
@@ -94,7 +83,7 @@ if (isset($_POST['sql']) && ! empty($_POST['sql']))
 }
 
 $sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
-$tablesBarOpen = tablesBarShouldBeOpen();
+
  ?>
 <!doctype html>
 <html>
@@ -261,8 +250,9 @@ pre, table.results-table {
   top: 2vh;
   right: 2vw;
   color: #fff;
-  font-size: 3vw;
-  text-decoration: none; }
+  font-size: 2.3vw;
+  text-decoration: none;
+  z-index: 1; }
 
 .prompt-help small {
   cursor: pointer; }
@@ -280,7 +270,7 @@ pre, table.results-table {
     display: block; }
 </style>
 </head>
-<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
+<body class='<?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
 <div class='app'>
   <?php if ( ! $loggedIn): ?>
     <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
@@ -315,7 +305,7 @@ pre, table.results-table {
       </div><!-- in-grid -->
     </section>
     <div class='displays'>
-      <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
+      <section class='tables-section'>
         <h3>Tables</h3>
         <div class='tables'>
         </div><!-- tables -->
