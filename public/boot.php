@@ -29,13 +29,6 @@ function exportDump()
   exit(0);
 }
 
-function tablesBarShouldBeOpen()
-{
-  $sessionKey = 'tablesBarShouldBeOpen';
-
-  return isset($_SESSION[$sessionKey]) && $_SESSION[$sessionKey] === true;
-}
-
 function getTables($pdo)
 {
   $sql = 'show tables';
@@ -51,10 +44,6 @@ if (isset($_GET['ajax']))
 {
   switch ($_GET['action'])
   {
-    case 'SET_TABLES_BAR_OPEN_STATUS':
-      $_SESSION['tablesBarShouldBeOpen'] = $_GET['status'] === 'open';
-      echo json_encode(['success' => true, 'valueSet' => $_SESSION['tablesBarShouldBeOpen']]);
-      break;
     case 'LOG_OUT':
       session_destroy();
       break;
@@ -90,4 +79,4 @@ if (isset($_POST['sql']) && ! empty($_POST['sql']))
 }
 
 $sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
-$tablesBarOpen = tablesBarShouldBeOpen();
+

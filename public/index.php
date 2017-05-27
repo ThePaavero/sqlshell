@@ -7,7 +7,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' href='styles.css'>
 </head>
-<body class='<?php echo $tablesBarOpen ? 'barTogglerOpen' : '' ?><?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
+<body class='<?php echo $loggedIn ? ' logged-in' : ' logged-out' ?>'>
 <div class='app'>
   <?php if ( ! $loggedIn): ?>
     <form method='post' action='<?php echo $baseUrl ?>' class='login-form'>
@@ -42,7 +42,7 @@
       </div><!-- in-grid -->
     </section>
     <div class='displays'>
-      <section class='tables-section<?php echo $tablesBarOpen ? ' open' : '' ?>'>
+      <section class='tables-section'>
         <h3>Tables</h3>
         <div class='tables'>
         </div><!-- tables -->
