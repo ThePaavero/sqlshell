@@ -43,8 +43,6 @@ function getFirstTable($pdo, $db)
 
 if (isset($_GET['ajax']))
 {
-  header('Access-Control-Allow-Origin: *');
-
   switch ($_GET['action'])
   {
     case 'LOG_OUT':

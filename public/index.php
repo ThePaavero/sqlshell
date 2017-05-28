@@ -67,7 +67,7 @@
   <?php endif ?>
 </div><!-- app -->
 <script>
-  window.sqlshellData = <?php echo $jsonData ?>
+  window.sqlshellData = <?php echo isset($jsonData) ? $jsonData : 'null' ?>
 </script>
 <script src='bundle.js'></script>
 </body>
