@@ -11,7 +11,8 @@ $charset = 'utf8';
 
 session_start();
 
-$loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
+//$loggedIn = isset($_SESSION['sqlshellLoggedIn']) || (isset($_POST['password']) && $_POST['password'] === $shellPassword);
+$loggedIn = true;
 if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
 {
   $_SESSION['sqlshellLoggedIn'] = true;
@@ -57,6 +58,21 @@ if (isset($_GET['ajax']))
       die(json_encode([
         'loggedIn' => $loggedIn
       ]));
+    case 'LOGIN':
+      if (isset($_POST['password']) && $_POST['password'] === $shellPassword)
+      {
+        $_SESSION['sqlshellLoggedIn'] = true;
+        $loggedIn = true;
+        die(json_encode([
+          'loggedIn' => $loggedIn
+        ]));
+      }
+      else
+      {
+        die(json_encode([
+          'error' => 'Invalid password'
+        ]));
+      }
       break;
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form method='post' action='#' class='login-form' @submit.prevent='$parent.sendPassword(this.password)'>
+    <form method='post' action='#' class='login-form' @submit.prevent='this.sendPasswordCallback'>
       <p>
         <label>Log in: <input type='password' name='password' required v-model='password'/></label>
         <input type='submit' value='Log in'/>

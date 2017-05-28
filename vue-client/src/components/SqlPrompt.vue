@@ -1,16 +1,22 @@
 <template>
   <div>
-    <h1>SqlPrompt</h1>
+    <textarea @keyup='updateStore' v-model='queryString'></textarea>
   </div>
 </template>
 
 <script>
   export default{
-    props: [],
+    props: ['defaultQueryString'],
     data() {
-      return {}
+      return {
+        queryString: this.defaultQueryString
+      }
     },
-    methods: {}
+    methods: {
+      updateStore() {
+        this.$store.commit('setCurrentQueryString', this.queryString)
+      }
+    }
   }
 </script>
 

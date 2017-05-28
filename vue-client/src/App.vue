@@ -2,10 +2,10 @@
   <div id='app'>
     <LoginScreen
       v-if='!this.$store.state.loggedIn'
-      sendPasswordCallback='sendPassword'
+      :sendPasswordCallback='sendPassword'
     />
     <div v-else>
-      You are logged in lol
+      <SqlPrompt :defaultQueryString='getDefaultQueryString()'/>
     </div>
   </div>
 </template>
@@ -18,13 +18,19 @@
   import SqlPrompt from './components/SqlPrompt.vue'
   import TableList from './components/TableList.vue'
   import axios from 'axios'
+  //  axios.defaults.withCredentials = true
 
   const apiBaseUrl = 'http://sqlshell.dev:8000/'
 
   export default {
     name: 'app',
     components: {
-      LoginScreen
+      LoginScreen,
+      ActionList,
+      FavoritesList,
+      ResultDisplay,
+      SqlPrompt,
+      TableList,
     },
     mounted() {
       axios.get(apiBaseUrl + '?ajax=1&action=GIVE-LOGGED-IN-STATUS')
@@ -38,8 +44,22 @@
         .catch(console.error)
     },
     methods: {
-      sendPassword(password) {
-        console.log('Sending password "' + password + '"...')
+      sendPassword(e) {
+        const password = e.currentTarget.password.value
+        const params = new window.FormData()
+        params.append('password', password)
+        axios.post(apiBaseUrl + '?ajax=1&action=LOGIN', params)
+          .then(response => {
+            if (response.data.error) {
+              window.alert(response.data.error)
+              return
+            }
+            this.$store.commit('setLoggedIn', true)
+          })
+          .catch(console.error)
+      },
+      getDefaultQueryString() {
+        return 'select * from someTable'
       }
     }
   }
