@@ -19,7 +19,6 @@ const mutations = {
     state.loggedIn = bool
   },
   setCurrentQueryString(state, str) {
-    console.log('Setting query string to "' + str + '"')
     state.currentQueryString = str
   },
   setResultSet(state, resultSet) {

@@ -1,11 +1,20 @@
 <template>
-  <div id='app'>
+  <div id='app'
+    @keydown.ctrl.13.prevent='dispatch("run-query")'
+    @keydown.ctrl.27.prevent='dispatch("focus-on-prompt")'
+    @keydown.ctrl.83.prevent='dispatch("add-current-query-to-favorites")'
+    @keydown.ctrl.69.prevent='dispatch("download-dump")'
+    @keydown.ctrl.66.prevent='dispatch("toggle-tables-section")'
+    @keydown.ctrl.76.prevent='dispatch("toggle-favorites-section")'
+    @keydown.ctrl.68.prevent='dispatch("delete-last-favorite")'
+  >
     <LoginScreen
       v-if='!this.$store.state.loggedIn'
       :sendPasswordCallback='sendPassword'
     />
     <div v-else>
-      <SqlPrompt :defaultQueryString='getDefaultQueryString()'/>
+      <SqlPrompt :defaultQueryString='getDefaultQueryString()' ref='sqlPrompt'/>
+      <ActionList/>
     </div>
   </div>
 </template>
@@ -58,8 +67,19 @@
           })
           .catch(console.error)
       },
+      focusOnPrompt() {
+        console.log('focusing')
+        this.$refs.sqlPrompt.$el.focus()
+      },
       getDefaultQueryString() {
         return 'select * from someTable'
+      },
+      dispatch(actionKey) {
+        switch (actionKey) {
+          case 'focus-on-prompt':
+            this.focusOnPrompt()
+            break
+        }
       }
     }
   }
