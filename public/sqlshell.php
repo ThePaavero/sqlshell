@@ -55,39 +55,48 @@ if (isset($_GET['ajax']))
     case 'CREATE_DUMP':
       exportDump();
       break;
+    case 'GIVE-LOGGED-IN-STATUS':
+      die(json_encode([
+        'loggedIn' => $loggedIn
+      ]));
+      break;
   }
 
   exit;
 }
 
 $baseUrl = str_replace('index.php', '', $_SERVER['PHP_SELF']);
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$opt = [
-  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-  PDO::ATTR_EMULATE_PREPARES => false,
-];
-$pdo = new PDO($dsn, $user, $pass, $opt);
-$firstTable = getFirstTable($pdo, $db);
 
-$jsonData = json_encode([
-  'baseUrl' => $baseUrl,
-  'tables' => getTables($pdo)
-]);
-
-if (isset($_POST['sql']) && ! empty($_POST['sql']))
+if ($loggedIn)
 {
-  $sql = trim($_POST['sql']);
-  $pdoStatement = $pdo->query($sql);
-  $results = $pdoStatement->fetchAll();
-  if (isset($_POST['xhr']))
-  {
-    die(json_encode($results));
-  }
-  $results = '<pre>' . json_encode($results, JSON_PRETTY_PRINT) . '</pre>';
-}
+  $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+  $opt = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+  ];
+  $pdo = new PDO($dsn, $user, $pass, $opt);
+  $firstTable = getFirstTable($pdo, $db);
 
-$sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
+  $jsonData = json_encode([
+    'baseUrl' => $baseUrl,
+    'tables' => getTables($pdo)
+  ]);
+
+  if (isset($_POST['sql']) && ! empty($_POST['sql']))
+  {
+    $sql = trim($_POST['sql']);
+    $pdoStatement = $pdo->query($sql);
+    $results = $pdoStatement->fetchAll();
+    if (isset($_POST['xhr']))
+    {
+      die(json_encode($results));
+    }
+    $results = '<pre>' . json_encode($results, JSON_PRETTY_PRINT) . '</pre>';
+  }
+
+  $sql = isset($sql) ? $sql : 'select * from ' . $firstTable . ' limit 50';
+}
  ?>
 <!doctype html>
 <html>
@@ -334,7 +343,7 @@ pre, table.results-table {
   <?php endif ?>
 </div><!-- app -->
 <script>
-  window.sqlshellData = <?php echo $jsonData ?>
+  window.sqlshellData = <?php echo isset($jsonData) ? $jsonData : 'null' ?>
 </script>
 <script>(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
