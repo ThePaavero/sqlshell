@@ -31,7 +31,7 @@ const init = () => {
   tableLinks = printTableButtons(window.sqlshellData.tables)
 
   activateActiveRenderStyleTab()
-  listenToSubmitKeyCombination()
+  listenToKeyboardEvents()
   listenToSubmitTriggers()
   focusOnSqlPrompt()
   favorites.populateFavoritesFromDisk()
@@ -102,7 +102,7 @@ const toggleTablesFromDisk = () => {
   }
 }
 
-const listenToSubmitKeyCombination = () => {
+const listenToKeyboardEvents = () => {
   let ctrlDown = false
   document.addEventListener('keydown', e => {
     if (e.keyCode === 27) { // "ESC"
